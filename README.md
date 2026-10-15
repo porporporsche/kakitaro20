@@ -1,0 +1,29 @@
+# 柿太郎電鉄20！
+
+日本全国44都市をサイコロでめぐり、物件の購入やM&AでCPUの栗山社長と総資産を競う、オリジナルの鉄道すごろくゲームです。
+スマホ・PCのブラウザでそのまま遊べます（インストール不要、`index.html` 1ファイルで動作）。
+
+## 遊び方
+- プレイ年数は 3年・5年・10年、または 1〜99年の自由入力から選べます。
+- 目的地に一番乗りすると賞金。駅に止まると物件を買えます。町の物件をすべて買うと「買い占め」で収益2倍。
+- 相手の物件は M&A（1.5倍、買い占め中の町は2倍）で買収できます。
+- 6月に「渋柿ガラス」が登場。ついてくると柿を渋くしてお金を減らします。
+- 進行は月ごとにブラウザへ自動保存されます。
+
+## GitHub Pages で公開する手順
+1. GitHub で新しいリポジトリを作成（例: `kakitaro-dentetsu-20`、Public）。
+2. このフォルダの中身（`index.html` / `README.md` / `.nojekyll`）をリポジトリの直下にアップロードしてコミット。
+3. リポジトリの **Settings → Pages** を開き、**Source: Deploy from a branch**、**Branch: `main` / `(root)`** を選んで Save。
+4. 1〜2分後、`https://<ユーザー名>.github.io/kakitaro-dentetsu-20/` で遊べるようになります。
+
+コマンドで行う場合:
+```bash
+git init && git add . && git commit -m "柿太郎電鉄20！ 初回公開"
+git branch -M main
+git remote add origin https://github.com/<ユーザー名>/kakitaro-dentetsu-20.git
+git push -u origin main
+```
+
+## 補足
+- 地名・地理は実在の日本の都市をもとにしていますが、物件名・キャラクター・ルールはこのゲームのオリジナルです。
+- フォントは Google Fonts（Dela Gothic One / Zen Maru Gothic）を読み込みます。
