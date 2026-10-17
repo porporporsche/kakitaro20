@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="description" content="日本全国44都市をサイコロでめぐり、物件の購入やM&AでCPUと総資産を競うオリジナル鉄道すごろく。">
+<meta name="description" content="日本全国63都市と海外11都市をサイコロと飛行機でめぐり、物件の購入・増資・M&AでCPUと総資産を競うオリジナル鉄道すごろく。">
 <meta name="theme-color" content="#16303a">
 <meta property="og:title" content="柿太郎電鉄20！">
 <meta property="og:description" content="日本全国をサイコロでめぐるオリジナル鉄道すごろく。ブラウザですぐ遊べます。">
@@ -31,6 +31,9 @@ button{font-family:var(--body);font-weight:700;cursor:pointer}
 button:focus-visible{outline:3px solid var(--kaki);outline-offset:2px}
 #app{height:100%;display:flex;flex-direction:column;max-width:560px;margin:0 auto;padding-left:max(10px,env(safe-area-inset-left,0px));padding-right:max(10px,env(safe-area-inset-right,0px));padding-block:8px;gap:6px;box-sizing:border-box}
 .top{display:flex;align-items:center;justify-content:space-between;gap:8px;color:var(--paper)}
+.topr{display:flex;align-items:center;gap:6px}
+.snd{border:1.5px solid var(--paper);background:transparent;color:var(--paper);border-radius:6px;padding:3px 8px;font-size:11px;white-space:nowrap}
+.snd[aria-pressed="false"]{opacity:.55}
 .logo{font-family:var(--display);font-size:18px;letter-spacing:.02em;color:var(--paper)}
 .logo b{color:var(--kaki)}
 .cal{font-family:var(--display);font-size:15px;background:var(--paper);color:var(--ink);border-radius:6px;padding:3px 10px;font-variant-numeric:tabular-nums}
@@ -83,6 +86,10 @@ button:focus-visible{outline:3px solid var(--kaki);outline-offset:2px}
 .prop .buy:disabled{background:#cdb88f}
 .prop .buy.ma{background:var(--shibu);font-size:12px;line-height:1.25}
 .prop .buy.ma:disabled{background:#cdb88f}
+.prop .buy.inv{background:#6b8a2e;font-size:12px;line-height:1.25}
+.prop .buy.inv:disabled{background:#cdb88f}
+.lv{color:var(--card);margin-left:5px;font-size:12px;letter-spacing:1px}
+.subh{font-size:13px;color:var(--muted);margin:10px 0 2px;font-weight:700}
 .owned{grid-row:span 2;font-size:12px;font-weight:700;padding:4px 8px;border-radius:6px;color:#fff}
 .mono{background:var(--kaki);color:#fff;font-size:12px;border-radius:6px;padding:4px 8px;display:inline-block;margin-bottom:6px;font-weight:700}
 table.res{width:100%;border-collapse:collapse;font-size:13px;font-variant-numeric:tabular-nums}
@@ -121,7 +128,7 @@ table.res td:first-child,table.res th:first-child{text-align:left}
 <div id="app">
   <div class="top">
     <div class="logo"><b>柿</b>太郎電鉄<b>20！</b></div>
-    <div class="cal" id="cal">1年目 4月</div>
+    <div class="topr"><button class="snd" id="sndBtn" aria-pressed="true">♪ 音あり</button><div class="cal" id="cal">1年目 4月</div></div>
   </div>
   <button class="goalbar" id="goalbarBtn" title="タップで目的地を地図に表示"><span>目的地</span><span class="g" id="goal">—</span><span class="r" id="reward"></span></button>
   <div class="players" id="players"></div>
@@ -135,10 +142,11 @@ table.res td:first-child,table.res th:first-child{text-align:left}
       <rect id="sea" width="360" height="480" fill="url(#waves)"/>
       <g id="static"></g>
       <g id="dyn"></g>
+      <g id="fx"></g>
     </svg>
     <div class="toast" id="toast" hidden></div>
     <div class="steps" id="steps" hidden>のこり<b id="stepsN">0</b></div>
-    <div class="mapbtns"><button id="zoomBtn">全国を見る</button></div>
+    <div class="mapbtns"><button id="zoomBtn">全体を見る</button></div>
   </div>
   <div class="panel">
     <div class="dice" id="dice">柿</div>
@@ -154,7 +162,7 @@ table.res td:first-child,table.res th:first-child{text-align:left}
 <div class="title" id="title">
   <div class="tcard">
     <h1>柿太郎<span>電鉄20！</span></h1>
-    <p>小さな柿農家から、日本一の鉄道会社の社長へ。東京を出発し、北は稚内から南は那覇まで、全国44都市をサイコロでめぐって各地の店や柿畑を買い集めましょう。</p>
+    <p>小さな柿農家から、日本一の鉄道会社の社長へ。東京を出発し、北は稚内から南は那覇まで、全国63都市と海外11都市をサイコロと飛行機でめぐって各地の店や柿畑を買い集めましょう。</p>
     <div>
       <div style="font-size:12px;margin-bottom:6px;color:#d9ccb0">プレイ年数</div>
       <div class="yrs" id="yrs">
@@ -166,13 +174,17 @@ table.res td:first-child,table.res th:first-child{text-align:left}
     </div>
     <button class="btn main" id="startBtn" style="padding:14px;font-size:17px">あたらしく始める</button>
     <button class="btn ghost" id="contBtn" hidden>つづきから</button>
+    <button class="snd" id="tSndBtn" style="align-self:center;padding:6px 14px;font-size:13px">♪ BGM あり</button>
     <div class="rules">
       <b>あそびかた</b><br>
       対戦相手はCPUの<b>栗山社長</b>。最後の決算で総資産（お金＋物件）が多いほうの勝ちです。<br>
       <span class="legend" style="background:#3a7cb6"></span>青マス＝お金が入る　<span class="legend" style="background:#c63f35"></span>赤マス＝出費　<span class="legend" style="background:#d8a420"></span>黄マス＝札がもらえる<br>
-      地図はドラッグで動かせます。「全国を見る」で日本全体、目的地の帯をタップすると目的地を表示。白い点線は海をわたる航路・橋・トンネルです。<br>
+      サイコロを振ると、出た目で行けるマスが光ります。<b>どの方向へも、引き返してもOK</b>。行き先をタップして決めましょう。<br>
+      地図はドラッグで動かせます。「全体を見る」で日本と世界、目的地の帯をタップすると目的地を表示。白い点線は海をわたる航路・橋・トンネルです。<br>
+      <b>✈ 空港</b>のある町からは<b>飛行機</b>で国内・海外の空港へ飛べます（運賃は距離しだい）。地図左上の<b>世界</b>には海外11都市があり、物件は高額・高収益です。<br>
+      自分の物件のある町に止まると<b>増資</b>できます。1回ごとに収益が70%アップ（最大★3）。<br>
       <b>目的地</b>に一番乗りすると賞金。町では店や畑を買えて、毎年3月の<b>決算</b>で収益が入ります。町の物件をぜんぶ買うと<b>買い占め</b>で収益2倍。<br>
-      <b>柿畑</b>の物件は10月の<b>収穫</b>でも稼ぎます。<br>
+      <b>農園</b>の物件（柿畑など）は10月の<b>収穫</b>でも稼ぎます。<br>
       相手の物件がある町に止まると<b>M&A</b>で買収できます。価格は1.5倍、相手が買い占め中の町なら2倍。代金は相手に入ります。<br>
       6月になると<b>渋柿ガラス</b>が島に現れます。通りかかるとついてきて、柿を渋くしてお金を減らします。ついたまま相手のコマを通り過ぎれば、相手に押しつけられます。
     </div>
@@ -187,41 +199,60 @@ const sleep=ms=>new Promise(r=>setTimeout(r,ms));
 const rnd=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
 const pick=a=>a[Math.floor(Math.random()*a.length)];
 
-/* ---------- map: 日本全国 ---------- */
+/* ---------- map: 日本全国＋海外 ---------- */
 const SC=110,PAD=40,LON0=127.6,LAT0=45.8,CXF=0.81;
 const P=(lat,lon)=>[+(PAD+(lon-LON0)*CXF*SC).toFixed(1),+(PAD+(LAT0-lat)*SC).toFixed(1)];
 const MAP_W=Math.round(PAD*2+(146.2-LON0)*CXF*SC),MAP_H=Math.round(PAD*2+(LAT0-27.8)*SC);
 const OKI=[2.2,1.2]; // 沖縄は地図に収まるよう北東へ移して表示
+// 海外は左上の海に「世界（縮めて表示）」として描く
+const WBOX={x:40,y:40,w:840,h:600};
+const WP=(lat,lon)=>{if(lon<-30)lon+=360;return [+(80+(lon+5)*2.6).toFixed(1),+(85+(55-lat)*5.5).toFixed(1)];};
 const CITY=[
 ['稚内',45.42,141.67,'最北の柿茶屋:120:30|宗谷の海産加工場:400:25|北限の柿ハウス:200:40:f'],
+['網走',44.02,144.27,'流氷観光船:800:20|ホタテ加工場:500:25|じゃがいも農園:400:35:f','r'],
 ['旭川',43.77,142.37,'雪見の柿ハウス:300:35:f|旭川家具工房:800:20|動物園前の売店:150:40'],
-['札幌',43.06,141.35,'時計台前カフェ:500:30|雪まつり屋台:300:45|柿ソフト本舗:200:40|大通りの百貨店:4000:12'],
-['釧路',42.98,144.38,'霧の港市場:300:30|湿原ツアー会社:600:20|炉端焼き屋:150:40'],
+['札幌',43.06,141.35,'時計台前カフェ:500:30|雪まつり屋台:300:45|柿ソフト本舗:200:40|大通りの百貨店:4000:12','l'],
+['帯広',42.92,143.20,'豚丼の店:250:40|十勝の小麦畑:600:30:f|乳製品工場:2000:15'],
+['釧路',42.98,144.38,'霧の港市場:300:30|湿原ツアー会社:600:20|炉端焼き屋:150:40','r'],
+['室蘭',42.32,140.97,'カレーラーメン屋:200:40|製鉄所の売店:200:30|港の造船所:4000:10','r'],
 ['函館',41.77,140.73,'朝市の海鮮丼屋:250:35|坂の上の洋館ホテル:1500:15|夜景ロープウェイ:2000:12','l'],
-['青森',40.82,140.74,'りんごと柿の果樹園:300:40:f|ねぶた工房:500:20|港のホタテ屋:200:35','r'],
-['盛岡',39.70,141.15,'冷麺の店:200:35|南部鉄器工房:600:20|岩手山麓の牧場:800:25'],
+['青森',40.82,140.74,'りんごと柿の果樹園:300:40:f|ねぶた工房:500:20|港のホタテ屋:200:35','l'],
+['八戸',40.51,141.49,'朝市の屋台:150:45|いか釣り船団:900:22|港の水産工場:1800:15','r'],
+['盛岡',39.70,141.15,'冷麺の店:200:35|南部鉄器工房:600:20|岩手山麓の牧場:800:25','r'],
 ['秋田',39.72,140.10,'稲庭うどん処:250:30|竿燈の提灯屋:150:35|秋田杉の材木店:900:20','l'],
+['酒田',38.91,139.84,'庄内米の田んぼ:400:30:f|港の倉庫街:800:20|干し柿の蔵:300:40:f','l'],
 ['仙台',38.27,140.87,'牛たん焼き屋:400:35|七夕飾り工房:300:25|杜の都デパート:3000:12','r'],
 ['山形',38.24,140.36,'庄内柿の柿畑:300:45:f|さくらんぼ農園:600:30:f|芋煮会館:200:30','l'],
-['郡山',37.40,140.38,'あんぽ柿の干し場:350:40:f|赤べこ工房:150:30|地ビール醸造所:900:20'],
+['福島',37.76,140.47,'桃の果樹園:500:35:f|あんぽ柿工房:400:40:f|温泉旅館:2000:13','r'],
+['会津若松',37.49,139.93,'会津塗の工房:500:25|身不知柿の柿畑:400:45:f|城下の茶屋:200:35','l'],
+['郡山',37.40,140.38,'地ビール醸造所:900:20|赤べこ工房:150:30|あんぽ柿の干し場:350:40:f'],
+['いわき',37.05,140.85,'港の魚市場:600:25|南国風の温泉施設:3000:12|海の水族館:2500:12','r'],
 ['新潟',37.92,139.04,'八珍柿の柿畑:400:40:f|米どころの酒蔵:1200:20|へぎそば屋:250:30','l'],
+['上越',37.15,138.24,'笹団子屋:150:40|雪国の酒蔵:1000:20|スキーリゾート:3000:12','u'],
 ['宇都宮',36.56,139.88,'餃子の名店:300:40|いちご園:500:30:f|日光行き観光バス:1500:15','r'],
 ['水戸',36.37,140.47,'納豆蔵:200:35|梅の名園茶屋:300:25|メロン農園:600:30:f','r'],
+['高崎',36.32,139.00,'だるま工房:200:35|焼きまんじゅう屋:150:40|こんにゃく工場:1200:20'],
 ['千葉',35.61,140.12,'落花生問屋:300:30|房総の柿畑:400:35:f|湾岸テーマホテル:5000:10','r'],
 ['東京',35.68,139.77,'下町の干し柿屋:200:40|銀座の柿パフェ店:2000:20|湾岸タワーホテル:6000:12|丸の内オフィスビル:8000:10','u'],
 ['横浜',35.35,139.55,'中華街の点心屋:500:35|赤れんが雑貨店:1500:20|港の展望タワー:5000:10','l'],
-['長野',36.65,138.18,'市田柿の干し柿小屋:300:45:f|信州そば処:250:30|高原スキー場:2500:12'],
+['甲府',35.66,138.57,'ぶどう園:600:35:f|ほうとう屋:250:35|水晶細工店:800:22'],
+['長野',36.65,138.18,'市田柿の干し柿小屋:300:45:f|信州そば処:250:30|高原スキー場:2500:12','r'],
+['松本',36.24,137.97,'城下町のそば屋:250:35|りんご園:500:30:f|山岳ホテル:2500:12','l'],
 ['富山',36.70,137.21,'白えび食堂:300:30|薬の老舗:1200:18|立山の山岳ガイド:600:20','u'],
 ['金沢',36.56,136.66,'茶屋街の和菓子舗:400:30|金箔工房:800:25|港町の海鮮市場:1000:20','l'],
 ['福井',36.06,136.22,'めがね工房:500:25|恐竜博物館売店:300:30|越前がに問屋:800:25','l'],
 ['静岡',34.98,138.38,'茶畑:400:35:f|うなぎ屋:300:30|富士見の柿園:500:35:f'],
-['名古屋',35.17,136.88,'味噌カツ屋:400:35|次郎柿の柿畑:600:40:f|栄の百貨店:5000:12|自動車部品工場:7000:10'],
+['浜松',34.71,137.73,'うなぎの蒲焼き店:400:35|楽器工房:2500:15|湖の養殖場:900:22'],
+['名古屋',35.17,136.88,'味噌カツ屋:400:35|次郎柿の柿畑:600:40:f|栄の百貨店:5000:12|自動車部品工場:7000:10','u'],
+['津',34.72,136.50,'天むす屋:200:40|真珠の店:2500:15|焼肉の名店:1500:20','r'],
 ['京都',35.10,135.78,'抹茶甘味処:500:30|西陣織の老舗:2000:15|町家旅館:4000:12','u'],
 ['大阪',34.69,135.50,'たこ焼き屋台:200:50|串カツ屋:600:35|天下の台所市場:3000:15|梅田の商業ビル:7000:10'],
-['神戸',34.69,135.05,'港のパン屋:300:35|異人館カフェ:800:25|温泉旅館:4000:12','l'],
+['神戸',34.69,135.05,'港のパン屋:300:35|異人館カフェ:800:25|温泉旅館:4000:12'],
 ['奈良',34.60,135.90,'刀根早生の柿畑:400:45:f|柿の葉寿司本舗:500:30|鹿せんべい屋:100:50','r'],
 ['和歌山',34.15,135.17,'富有柿の大柿園:800:40:f|たねなし柿農園:500:45:f|梅干しの蔵:600:25|白浜リゾート:3000:12'],
-['岡山',34.66,133.92,'白桃農園:600:30:f|デニム工房:700:25|名園の茶屋:300:30','u'],
+['姫路',34.83,134.60,'城見の茶屋:300:30|皮革工房:900:22|おでん屋:150:40','u'],
+['鳥取',35.50,134.24,'砂丘のラクダ観光:500:25|二十世紀梨の梨園:500:35:f|カニ問屋:900:22','u'],
+['岡山',34.66,133.92,'白桃農園:600:30:f|デニム工房:700:25|名園の茶屋:300:30'],
 ['松江',35.47,133.05,'しじみ漁の店:200:35|出雲そば処:250:30|縁結び土産店:400:30','u'],
 ['広島',34.39,132.46,'お好み焼き屋:300:40|牡蠣の養殖場:800:25|宮島の旅館:3000:12','l'],
 ['山口',34.18,131.47,'瓦そば屋:200:35|萩焼の窯元:500:25|ふぐ料理屋:1000:20','u'],
@@ -229,37 +260,68 @@ const CITY=[
 ['徳島',34.07,134.55,'すだち農園:300:35:f|阿波踊り会館:400:25|藍染め工房:600:25','r'],
 ['高知',33.56,133.53,'かつおのたたき屋:300:35|ゆず農園:400:35:f|桂浜の土産店:200:30'],
 ['松山',33.84,132.77,'三色団子屋:150:40|みかん農園:500:35:f|道後の温泉旅館:3000:12','l'],
-['北九州',33.88,130.88,'焼きカレー店:250:35|門司港レトロ館:800:20|製鉄所:6000:10','l'],
-['福岡',33.59,130.40,'屋台のラーメン:300:45|明太子問屋:1000:25|筑後の柿畑:500:40:f|天神の商業ビル:5000:12'],
+['北九州',33.88,130.88,'焼きカレー店:250:35|門司港レトロ館:800:20|製鉄所:6000:10','r'],
+['福岡',33.59,130.40,'屋台のラーメン:300:45|明太子問屋:1000:25|筑後の柿畑:500:40:f|天神の商業ビル:5000:12','u'],
+['佐賀',33.25,130.30,'のり養殖場:600:30|焼き物の窯元:900:22|富有柿の柿園:500:40:f','r'],
+['佐世保',33.18,129.72,'バーガー屋:250:45|港の造船所:5000:10|テーマパークホテル:6000:12','l'],
 ['長崎',32.75,129.88,'ちゃんぽん屋:300:35|カステラ本舗:800:25|坂の上の教会ホテル:2000:15'],
 ['熊本',32.80,130.71,'馬刺し料理屋:400:30|城下町の柿園:400:35:f|阿蘇の牧場:1200:20'],
 ['大分',33.24,131.61,'かぼす農園:400:35:f|関さば料理屋:600:30|地獄めぐり温泉:2000:15','r'],
+['延岡',32.58,131.67,'地鶏炭火焼き屋:250:40|日向の柑橘園:500:30:f|化学工場:4000:12','r'],
 ['宮崎',31.91,131.42,'チキン南蛮食堂:200:40|マンゴー農園:800:30:f|日南海岸リゾート:2500:12','r'],
 ['鹿児島',31.60,130.56,'黒豚しゃぶしゃぶ屋:500:30|焼酎の蔵:1000:22|桜島フェリー:1500:15','l'],
 ['那覇',26.21,127.68,'サトウキビ畑:200:40:f|国際通りの土産店:300:35|海辺のリゾートホテル:5000:12'],
 ];
-// "-" は線路、"~" は海をわたる航路・橋・トンネル
-const LINES=['稚内-旭川','旭川-札幌','旭川-釧路','札幌-釧路','札幌-函館','函館~青森','青森-盛岡','青森-秋田','秋田-盛岡','盛岡-仙台','秋田-山形','山形-仙台','山形-新潟','仙台-郡山','郡山-新潟','郡山-宇都宮','郡山-水戸','宇都宮-東京','水戸-千葉','千葉-東京','東京-横浜','東京-長野','長野-新潟','新潟-富山','長野-名古屋','富山-金沢','金沢-福井','福井-京都','横浜-静岡','静岡-名古屋','名古屋-京都','名古屋-奈良','京都-大阪','京都-奈良','大阪-奈良','奈良-和歌山','大阪-和歌山','大阪-神戸','神戸-岡山','神戸~徳島','岡山~高松','岡山-広島','岡山-松江','松江-山口','広島-山口','広島~松山','高松-徳島','高松-松山','高松-高知','徳島-高知','松山-高知','松山~大分','山口~北九州','北九州-福岡','北九州-大分','福岡-長崎','福岡-熊本','熊本-大分','熊本-鹿児島','大分-宮崎','宮崎-鹿児島','鹿児島~那覇'];
+const WORLD=[
+['ロンドン',51.51,-0.13,'紅茶と柿のティールーム:800:25|劇場街の劇場:4000:12|二階建てバス会社:6000:10','r'],
+['ドバイ',25.20,55.27,'金のスーク商店:3000:15|砂漠ツアー会社:1500:20|超高層ホテル:9000:10'],
+['バンコク',13.75,100.50,'屋台のカオマンガイ:200:50|水上マーケット:800:30|南国フルーツ農園:1200:30:f','l'],
+['シンガポール',1.29,103.85,'ホーカー屋台:300:45|港湾倉庫:5000:12|屋上プールホテル:8000:10','r'],
+['上海',31.23,121.47,'小籠包の店:400:40|夜景クルーズ:2500:15|金融街オフィス:9000:10','l'],
+['ソウル',37.57,126.98,'焼き栗の屋台:150:50|干し柿菓子の老舗:400:40:f|コスメ店ビル:3000:15','u'],
+['台北',25.03,121.56,'夜市の小吃店:200:50|茶藝館:600:30|半導体工場:9000:10'],
+['シドニー',-33.87,151.21,'ビーチのカフェ:500:35|牧羊ファーム:2000:20:f|港のコンサートホール:6000:12','u'],
+['ホノルル',21.31,-157.86,'サーフショップ:300:40|パイナップル農園:1500:25:f|ビーチリゾート:6000:12'],
+['ロサンゼルス',34.05,-118.24,'タコス屋台:250:45|西海岸の柿農園:1500:30:f|映画スタジオ:9000:10','u'],
+['ニューヨーク',40.71,-74.01,'ベーグル店:300:45|ミュージカル劇場:5000:12|摩天楼オフィス:10000:10','l'],
+];
+const AIR_J=['札幌','釧路','仙台','東京','名古屋','大阪','広島','福岡','鹿児島','那覇'];
+// "-" は線路、"~" は海をわたる航路・橋・トンネル（海外は航路）
+const LINES=['稚内-旭川','旭川-網走','網走-釧路','旭川-札幌','札幌-帯広','帯広-釧路','札幌-室蘭','室蘭-函館','函館~青森',
+'青森-八戸','八戸-盛岡','青森-秋田','秋田-盛岡','秋田-酒田','酒田-新潟','酒田-山形','盛岡-仙台','山形-仙台','仙台-福島','山形-福島','福島-郡山','郡山-会津若松','会津若松-新潟','仙台-いわき','いわき-水戸','郡山-いわき','郡山-宇都宮',
+'宇都宮-東京','宇都宮-高崎','高崎-東京','水戸-千葉','千葉-東京','東京-横浜','東京-甲府','横浜-静岡','高崎-長野','長野-上越','上越-新潟','上越-富山','長野-松本','松本-甲府','松本-名古屋','甲府-静岡',
+'富山-金沢','金沢-福井','福井-京都','静岡-浜松','浜松-名古屋','名古屋-京都','名古屋-津','津-奈良','京都-大阪','京都-奈良','大阪-奈良','奈良-和歌山','大阪-和歌山','大阪-神戸','神戸-姫路','姫路-岡山','姫路-鳥取','鳥取-松江','鳥取-京都','神戸~徳島','岡山~高松','岡山-広島','岡山-松江','松江-山口','広島-山口','広島~松山',
+'高松-徳島','高松-松山','高松-高知','徳島-高知','松山-高知','松山~大分',
+'山口~北九州','北九州-福岡','北九州-大分','福岡-佐賀','佐賀-長崎','佐賀-佐世保','佐世保-長崎','福岡-熊本','熊本-大分','熊本-鹿児島','大分-延岡','延岡-宮崎','宮崎-鹿児島','鹿児島~那覇',
+'ロンドン~ドバイ','ドバイ~バンコク','バンコク~シンガポール','シンガポール~シドニー','バンコク~台北','台北~上海','上海~ソウル','シドニー~ホノルル','ホノルル~ロサンゼルス','ロサンゼルス~ニューヨーク','ニューヨーク~ロンドン'];
 const nodes={},adj={},byName={};
-CITY.forEach((c,i)=>{const id='c'+i;let [nm,lat,lon,ps,lab]=c;if(nm==='那覇'){lat+=OKI[0];lon+=OKI[1];}
+const parseProps=ps=>ps.split('|').map(s=>{const a=s.split(':');return {name:a[0],price:+a[1],yld:+a[2],farm:a[3]==='f'};});
+CITY.forEach((c,i)=>{const id='c'+i;let [nm,lat,lon,ps,lab]=c;const geo=[lat,lon];if(nm==='那覇'){lat+=OKI[0];lon+=OKI[1];}
   const [x,y]=P(lat,lon);
-  nodes[id]={id,type:'town',x,y,name:nm,lab:lab||'',props:ps.split('|').map(s=>{const a=s.split(':');return {name:a[0],price:+a[1],yld:+a[2],farm:a[3]==='f'};})};
-  byName[nm]=id;adj[id]=[];});
+  nodes[id]={id,type:'town',x,y,name:nm,lab:lab||'',geo,world:false,airport:AIR_J.includes(nm),props:parseProps(ps)};byName[nm]=id;adj[id]=[];});
+const WDISP={'ソウル':[40.6,127.5],'台北':[22.3,121.5]}; // 近い3都市は少し離して表示
+WORLD.forEach((c,i)=>{const id='w'+i;const [nm,lat,lon,ps,lab]=c;const [x,y]=WP(...(WDISP[nm]||[lat,lon]));
+  nodes[id]={id,type:'town',x,y,name:nm,lab:lab||'',geo:[lat,lon],world:true,airport:true,props:parseProps(ps)};byName[nm]=id;adj[id]=[];});
 const PATTERN=['plus','plus','minus','card','plus','minus','plus','card','plus','minus','plus','plus','card','minus'];
 const RAILS=[];let k=0;
 LINES.forEach(e=>{const sea=e.includes('~');const [a,b]=e.split(/[-~]/).map(n=>byName[n]);
+  if(!a||!b)throw new Error('line '+e);
   const A=nodes[a],B=nodes[b],len=Math.hypot(B.x-A.x,B.y-A.y),n=Math.max(1,Math.min(5,Math.round(len/42)));
   const ch=[a];
-  for(let j=1;j<=n;j++){const id='s'+k;nodes[id]={id,type:PATTERN[k%PATTERN.length],x:A.x+(B.x-A.x)*j/(n+1),y:A.y+(B.y-A.y)*j/(n+1),sea};adj[id]=[];ch.push(id);k++;}
+  for(let j=1;j<=n;j++){const id='s'+k;nodes[id]={id,type:PATTERN[k%PATTERN.length],x:A.x+(B.x-A.x)*j/(n+1),y:A.y+(B.y-A.y)*j/(n+1),sea,world:A.world};adj[id]=[];ch.push(id);k++;}
   ch.push(b);
   for(let j=0;j<ch.length-1;j++){adj[ch[j]].push(ch[j+1]);adj[ch[j+1]].push(ch[j]);}
   RAILS.push({a,b,sea});});
 const IDS=Object.keys(nodes);
 const DIST={};
 IDS.forEach(s=>{const d={[s]:0},q=[s];while(q.length){const c=q.shift();adj[c].forEach(n=>{if(d[n]==null){d[n]=d[c]+1;q.push(n);}});}DIST[s]=d;});
-const townIds=CITY.map((c,i)=>'c'+i);
-const plainIds=IDS.filter(i=>nodes[i].type!=='town');
+const allTownIds=IDS.filter(i=>nodes[i].type==='town');
+const townIds=allTownIds.filter(i=>!nodes[i].world);      // 国内の町（目的地はここから）
+const plainIds=IDS.filter(i=>nodes[i].type!=='town'&&!nodes[i].world);
+const airportIds=allTownIds.filter(i=>nodes[i].airport);
 const START=byName['東京'];
+function geoKm(a,b){const R=6371,r=Math.PI/180,[la1,lo1]=nodes[a].geo,[la2,lo2]=nodes[b].geo;
+  const h=Math.sin((la2-la1)*r/2)**2+Math.cos(la1*r)*Math.cos(la2*r)*Math.sin((lo2-lo1)*r/2)**2;return 2*R*Math.asin(Math.sqrt(h));}
 
 /* ---------- cards ---------- */
 const CARDS={
@@ -268,13 +330,14 @@ const CARDS={
  toriyoke:{name:'鳥よけ札',desc:'ついている渋柿ガラスを追い払う'},
  hosaku:{name:'豊作札',desc:'臨時収入が入る'},
  ashidome:{name:'足止め札',desc:'相手を1回休みにする'},
- tobi:{name:'飛び札',desc:'ランダムな町へ一瞬で移動する'},
+ tobi:{name:'飛び札',desc:'国内のランダムな町へ一瞬で移動する'},
+ hikoki:{name:'飛行機札',desc:'今いる場所から好きな空港へ無料で飛べる（海外もOK）'},
 };
-const CARD_POOL=['hayagake','hayagake','hayagake','tokkyu','tokkyu','toriyoke','toriyoke','hosaku','ashidome','tobi'];
+const CARD_POOL=['hayagake','hayagake','hayagake','tokkyu','tokkyu','toriyoke','toriyoke','hosaku','ashidome','tobi','hikoki','hikoki'];
 
 /* ---------- state ---------- */
 let S=null;
-const SAVE_KEY='kakitaro-save-v2-japan';
+const SAVE_KEY='kakitaro-save-v3-world';
 function save(){try{localStorage.setItem(SAVE_KEY,JSON.stringify(S));}catch(e){}}
 function loadSave(){try{const s=localStorage.getItem(SAVE_KEY);return s?JSON.parse(s):null;}catch(e){return null;}}
 function clearSave(){try{localStorage.removeItem(SAVE_KEY);}catch(e){}}
@@ -283,7 +346,7 @@ function newGame(years){
   S={years,year:1,month:4,turn:0,over:false,
     players:[{name:'あなた',short:'柿',money:1000,pos:START,prev:null,cards:['hayagake','hayagake'],skip:0,cpu:false,color:'#e8702a'},
              {name:'栗山社長',short:'栗',money:1000,pos:START,prev:null,cards:['hayagake','hayagake'],skip:0,cpu:true,color:'#3b4f86'}],
-    owners:{},goal:null,goalReward:0,crow:{at:null,holder:null,spawned:false},log:[]};
+    owners:{},levels:{},goal:null,goalReward:0,crow:{at:null,holder:null,spawned:false},log:[]};
   setGoal(START);
 }
 const yf=()=>1+0.25*(S.year-1);
@@ -296,8 +359,8 @@ function setGoal(from){
 const key=(t,i)=>t+':'+i;
 function ownerOf(t,i){const o=S.owners[key(t,i)];return o==null?null:o;}
 function monoOf(t){const ps=nodes[t].props;const o=ownerOf(t,0);if(o==null)return null;for(let i=1;i<ps.length;i++)if(ownerOf(t,i)!==o)return null;return o;}
-function holdings(pi){const out=[];townIds.forEach(t=>nodes[t].props.forEach((p,i)=>{if(ownerOf(t,i)===pi)out.push({t,i,p});}));return out;}
-const assets=pi=>S.players[pi].money+holdings(pi).reduce((s,h)=>s+h.p.price,0);
+function holdings(pi){const out=[];allTownIds.forEach(t=>nodes[t].props.forEach((p,i)=>{if(ownerOf(t,i)===pi)out.push({t,i,p});}));return out;}
+const assets=pi=>S.players[pi].money+holdings(pi).reduce((s,h)=>s+valOf(h.t,h.i),0);
 
 function fmt(m){const neg=m<0;m=Math.abs(Math.round(m));let s;if(m>=10000){const o=Math.floor(m/10000),r=m%10000;s=o+'億'+(r?r+'万':'')+'円';}else s=m+'万円';return (neg?'−':'')+s;}
 
@@ -317,6 +380,7 @@ function smooth(pts){const n=pts.length;let d=`M${pts[0][0]},${pts[0][1]}`;
     const c1=[p1[0]+(p2[0]-p0[0])/6,p1[1]+(p2[1]-p0[1])/6],c2=[p2[0]-(p3[0]-p1[0])/6,p2[1]-(p3[1]-p1[1])/6];
     d+=`C${c1[0].toFixed(1)},${c1[1].toFixed(1)} ${c2[0].toFixed(1)},${c2[1].toFixed(1)} ${p2[0]},${p2[1]}`;}
   return d+'Z';}
+const PLANE='M0,-10 L2,-3 L10,1 L10,3.5 L2,1.5 L1.2,7 L4,9 L4,10.5 L0,9.5 L-4,10.5 L-4,9 L-1.2,7 L-2,1.5 L-10,3.5 L-10,1 L-2,-3Z';
 function drawStatic(){
   $('sea').setAttribute('width',MAP_W);$('sea').setAttribute('height',MAP_H);
   const g=$('static');g.innerHTML='';
@@ -328,6 +392,13 @@ function drawStatic(){
   el('text',{x:ix+8,y:jy-8,'font-size':10,fill:'#9cc3cf','font-family':'Zen Maru Gothic'},g,'沖縄（位置を移して表示）');
   [['日本海',39.4,135.2],['太平洋',32.4,139.6],['オホーツク海',45.3,144.6],['東シナ海',31.2,127.95]].forEach(([t,la,lo])=>{const [x,y]=P(la,lo);
     el('text',{x,y,'text-anchor':'middle','font-size':18,'letter-spacing':6,fill:'#5d8c9a','font-family':'Zen Maru Gothic','font-weight':700},g,t);});
+  // 世界（縮めて表示）
+  el('rect',{x:WBOX.x,y:WBOX.y,width:WBOX.w,height:WBOX.h,rx:14,fill:'#1d4150',stroke:'#9cc3cf','stroke-width':2,'stroke-dasharray':'8 6'},g);
+  el('text',{x:WBOX.x+16,y:WBOX.y+28,'font-size':16,'font-weight':700,fill:'#9cc3cf','font-family':'Zen Maru Gothic','letter-spacing':2},g,'世界（縮めて表示）・飛行機で行けます');
+  // 日本の位置の目印
+  allTownIds.filter(i=>nodes[i].world).forEach(i=>{const n=nodes[i];
+    el('ellipse',{cx:n.x+3,cy:n.y+4,rx:30,ry:21,fill:'#16303a',opacity:.6},g);
+    el('ellipse',{cx:n.x,cy:n.y,rx:30,ry:21,fill:'#f4e7c8',stroke:'#c9b07e','stroke-width':2},g);});
   RAILS.forEach(r=>{const A=nodes[r.a],B=nodes[r.b];
     if(r.sea){el('line',{x1:A.x,y1:A.y,x2:B.x,y2:B.y,stroke:'#f4e7c8','stroke-width':2.4,'stroke-dasharray':'1 6','stroke-linecap':'round'},g);}
     else{el('line',{x1:A.x,y1:A.y,x2:B.x,y2:B.y,stroke:'#5c3a22','stroke-width':5,'stroke-linecap':'round'},g);
@@ -340,6 +411,8 @@ function drawStatic(){
       const lp={u:[0,-19,'middle'],l:[-15,4,'end'],r:[15,4,'start']}[n.lab]||[0,20,'middle'];
       el('text',{x:n.x+lp[0],y:n.y+lp[1],'text-anchor':lp[2],'font-size':11,'font-weight':700,fill:'#2b1d13','font-family':'Zen Maru Gothic',stroke:'#f4e7c8','stroke-width':3,'paint-order':'stroke'},g,n.name);
       el('text',{x:n.x,y:n.y+3,'text-anchor':'middle','font-size':8,fill:'#5c3a22','font-family':'Dela Gothic One',id:'tmark-'+id,'pointer-events':'none'},g,'駅');
+      if(n.airport){const a=el('g',{transform:`translate(${n.x+12},${n.y+9}) rotate(45) scale(.55)`,'pointer-events':'none'},g);
+        el('circle',{r:12,fill:'#3a7cb6',stroke:'#fffaf0','stroke-width':3,transform:'rotate(-45)'},a);el('path',{d:PLANE,fill:'#fff'},a);}
     }else{
       const col={plus:'#3a7cb6',minus:'#c63f35',card:'#d8a420'}[n.type];
       el('circle',{cx:n.x,cy:n.y,r:6,fill:col,stroke:'#fffaf0','stroke-width':1.6},g);
@@ -361,7 +434,7 @@ let highlights=[];
 function render(){
   const d=$('dyn');d.innerHTML='';
   // ownership tint on towns
-  townIds.forEach(t=>{const r=$('town-'+t),m=$('tmark-'+t),mo=monoOf(t);
+  allTownIds.forEach(t=>{const r=$('town-'+t),m=$('tmark-'+t),mo=monoOf(t);
     if(mo!=null){r.setAttribute('fill',S.players[mo].color);m.setAttribute('fill','#fff');m.textContent='占';}
     else{r.setAttribute('fill','#fffaf0');m.setAttribute('fill','#5c3a22');m.textContent='駅';}
     const owned=[0,1].map(pi=>nodes[t].props.filter((p,i)=>ownerOf(t,i)===pi).length);
@@ -377,7 +450,9 @@ function render(){
   // crow on map
   if(S.crow.at){const n=nodes[S.crow.at];drawCrow(d,n.x,n.y-12,1);}
   // pieces
-  S.players.forEach((p,i)=>{const n=nodes[p.pos],ox=i?7:-7,oy=i?5:-5;
+  if(preview){el('polyline',{points:preview.map(id=>nodes[id].x+','+nodes[id].y).join(' '),fill:'none',stroke:'#e8702a','stroke-width':6,'stroke-linecap':'round','stroke-linejoin':'round',opacity:.85},d);
+    const e=nodes[preview[preview.length-1]];el('circle',{cx:e.x,cy:e.y,r:12,fill:'#e8702a',stroke:'#fff','stroke-width':3},d);}
+  S.players.forEach((p,i)=>{if(p.flying)return;const n=nodes[p.pos],ox=i?7:-7,oy=i?5:-5;
     const g=el('g',{transform:`translate(${n.x+ox},${n.y+oy})`},d);
     el('circle',{r:9,fill:p.color,stroke:'#fff','stroke-width':2.2},g);
     el('text',{y:3.6,'text-anchor':'middle','font-size':10,fill:'#fff','font-family':'Dela Gothic One'},g,p.short);
@@ -393,7 +468,9 @@ function render(){
   $('cal').innerHTML=`${S.year}年目 ${S.month}月<small>/ 全${S.years}年</small>`;
   $('goal').textContent=nodes[S.goal].name;
   const me=S.players[0];
-  $('reward').textContent=`賞金 ${fmt(S.goalReward)}・あと${DIST[me.pos][S.goal]}マス`;
+  const gd=DIST[me.pos][S.goal];
+  $('reward').textContent=`賞金 ${fmt(S.goalReward)}・${gd==null?'いまは海外':`あと${gd}マス`}`;
+  Snd.music(bgmKey());
   $('players').innerHTML=S.players.map((p,i)=>`<div class="pl ${S.turn===i&&!S.over?'active':''}"><div class="nm"><span class="dot" style="background:${p.color}"></span>${p.name}${S.crow.holder===i?'<span class="crowtag">カラス</span>':''}${p.skip?'<span class="crowtag">休み</span>':''}</div><div class="money ${p.money<0?'neg':''}">${fmt(p.money)}</div><div class="sub"><span>物件 ${holdings(i).length}</span><span>札 ${p.cards.length}</span><span>総資産 ${fmt(assets(i))}</span></div></div>`).join('');
   const lg=S.log.slice(-2);
   $('msg').innerHTML=lg.map((l,j)=>j<lg.length-1?`<div class="old">${l}</div>`:`<div>${l}</div>`).join('');
@@ -418,28 +495,42 @@ function modal(title,lead,body,btns){
     return sh;
   });
 }
-function propRows(t,pi,canBuy,onBuy){
+/* ---------- 物件・増資・M&A ---------- */
+const MAXLV=3;
+const lvOf=(t,i)=>(S.levels&&S.levels[key(t,i)])||0;
+const investCost=(t,i)=>Math.round(nodes[t].props[i].price*.5/10)*10;          // 増資1回 = 物件価格の半額
+const valOf=(t,i)=>Math.round(nodes[t].props[i].price*(1+.5*lvOf(t,i)));         // 資産価値 = 価格＋増資額
+const incomeOf=(t,i,pi)=>Math.round(nodes[t].props[i].price*nodes[t].props[i].yld/100*(1+.7*lvOf(t,i))*(monoOf(t)===pi?2:1)); // 増資1回で収益+70%
+const stars=lv=>lv?`<span class="lv">${'★'.repeat(lv)}${'☆'.repeat(MAXLV-lv)}</span>`:'';
+const farmTag='<span class="tag" style="background:#6b8a2e">農園</span>';
+function propRows(t,pi,canBuy){
   const n=nodes[t];const mo=monoOf(t);
   let h=mo!=null?`<div class="mono">${S.players[mo].name}が買い占め中（収益2倍）</div>`:'';
-  n.props.forEach((p,i)=>{const o=ownerOf(t,i);
-    const tag=p.farm?`<span class="tag" style="background:#6b8a2e">柿畑</span>`:'';
-    let right;
+  n.props.forEach((p,i)=>{const o=ownerOf(t,i),lv=lvOf(t,i);
+    let right,info=`${fmt(p.price)}・収益率 ${p.yld}%`;
+    if(o!=null)info+=`・年収益 ${fmt(incomeOf(t,i,o))}`;
     if(o!=null&&canBuy&&o!==pi){const c=maPrice(t,i);right=`<button class="buy ma" data-i="${i}" ${S.players[pi].money<c?'disabled':''}>買収<br>${fmt(c)}</button>`;}
+    else if(o!=null&&canBuy&&o===pi){right=lv>=MAXLV?`<span class="owned" style="background:${S.players[o].color}">増資済み</span>`
+      :`<button class="buy inv" data-i="${i}" ${S.players[pi].money<investCost(t,i)?'disabled':''}>増資<br>${fmt(investCost(t,i))}</button>`;}
     else if(o!=null)right=`<span class="owned" style="background:${S.players[o].color}">${S.players[o].short}所有</span>`;
     else if(canBuy)right=`<button class="buy" data-i="${i}" ${S.players[pi].money<p.price?'disabled':''}>買う</button>`;
     else right=`<span class="owned" style="background:#cdb88f">空き</span>`;
-    h+=`<div class="prop"><div class="pn">${p.name}${tag}</div>${right}<div class="pm">${fmt(p.price)}・収益率 ${p.yld}%</div></div>`;
+    h+=`<div class="prop"><div class="pn">${p.name}${p.farm?farmTag:''}${stars(lv)}</div>${right}<div class="pm">${info}</div></div>`;
   });
   return h;
 }
-/* M&A: 相手の物件を割増で買い取る。代金は元の持ち主に入る。買い占め中の町は2倍、それ以外は1.5倍 */
-function maPrice(t,i){const o=ownerOf(t,i);return Math.round(nodes[t].props[i].price*(o!=null&&monoOf(t)===o?2:1.5)/10)*10;}
+/* M&A: 相手の物件を割増で買い取る（増資分も含めた価値の1.5倍、買い占め中の町は2倍）。代金は元の持ち主に入る */
+function maPrice(t,i){const o=ownerOf(t,i);return Math.round(valOf(t,i)*(o!=null&&monoOf(t)===o?2:1.5)/10)*10;}
 async function doMA(pi,t,i){
   const p=S.players[pi],o=ownerOf(t,i),pr=nodes[t].props[i],c=maPrice(t,i);
   const brokeMono=monoOf(t)===o;
   p.money-=c;S.players[o].money+=c;S.owners[key(t,i)]=pi;
   log(`M&A：${p.name}が${S.players[o].name}から${pr.name}を${fmt(c)}で買収`);
   return {pr,c,brokeMono};
+}
+function doInvest(pi,t,i){
+  const p=S.players[pi],c=investCost(t,i);p.money-=c;S.levels[key(t,i)]=lvOf(t,i)+1;
+  log(`${p.name}が${nodes[t].props[i].name}に${fmt(c)}を増資（★${lvOf(t,i)}）`);
 }
 function showTownInfo(t){
   modal(nodes[t].name,'この町の物件（止まると買えます）',propRows(t,0,false),[{label:'閉じる',v:1,cls:'ghost'}]);
@@ -449,13 +540,15 @@ async function humanShop(pi,t){
   return new Promise(res=>{
     const draw=()=>{
       const sh=$('sheet');
-      sh.innerHTML=`<h2>${nodes[t].name}駅</h2><p class="lead">所持金 ${fmt(p.money)}。決算（3月）で 物件価格×収益率 が入ります。相手の物件は<b>M&A</b>で1.5倍（買い占め中の町は2倍）で買収できます。</p><div class="body">${propRows(t,pi,true)}</div><div class="btns"><button class="btn main" id="shopDone">買い物をおわる</button></div>`;
+      sh.innerHTML=`<h2>${nodes[t].name}${nodes[t].world?'':'駅'}</h2><p class="lead">所持金 ${fmt(p.money)}。決算（3月）で 物件価格×収益率 が入ります。自分の物件は<b>増資</b>（価格の半額）するたびに収益が70%ずつ上がります（最大★3）。相手の物件は<b>M&A</b>で買収できます。</p><div class="body">${propRows(t,pi,true)}</div><div class="btns"><button class="btn main" id="shopDone">買い物をおわる</button></div>`;
       sh.querySelectorAll('.buy.ma').forEach(b=>b.onclick=async()=>{const i=+b.dataset.i;if(p.money<maPrice(t,i))return;
-        const r=await doMA(pi,t,i);
+        const r=await doMA(pi,t,i);Snd.se('buy');
         toast(r.brokeMono?`${r.pr.name}を買収！ 相手の買い占めを崩した`:(monoOf(t)===pi?`買収で${nodes[t].name}を買い占め！`:`${r.pr.name}を買収した`),1500);
         draw();});
-      sh.querySelectorAll('.buy:not(.ma)').forEach(b=>b.onclick=()=>{const i=+b.dataset.i,pr=nodes[t].props[i];if(p.money<pr.price)return;
-        p.money-=pr.price;S.owners[key(t,i)]=pi;log(`${pr.name}を${fmt(pr.price)}で買った`);
+      sh.querySelectorAll('.buy.inv').forEach(b=>b.onclick=()=>{const i=+b.dataset.i;if(p.money<investCost(t,i)||lvOf(t,i)>=MAXLV)return;
+        doInvest(pi,t,i);Snd.se('card');toast(`増資！ 年収益 ${fmt(incomeOf(t,i,pi))} に`,1300);draw();});
+      sh.querySelectorAll('.buy:not(.ma):not(.inv)').forEach(b=>b.onclick=()=>{const i=+b.dataset.i,pr=nodes[t].props[i];if(p.money<pr.price)return;
+        p.money-=pr.price;S.owners[key(t,i)]=pi;Snd.se('buy');log(`${pr.name}を${fmt(pr.price)}で買った`);
         if(monoOf(t)===pi)toast(`${nodes[t].name}を買い占め！収益2倍`,1400);
         draw();});
       $('shopDone').onclick=()=>{$('ov').hidden=true;res();};
@@ -465,56 +558,151 @@ async function humanShop(pi,t){
 }
 function showHoldings(){
   const hs=holdings(0);
-  const body=hs.length?hs.map(h=>`<div class="prop"><div class="pn">${h.p.name}${h.p.farm?'<span class="tag" style="background:#6b8a2e">柿畑</span>':''}</div><span class="pm">${nodes[h.t].name}</span><div class="pm">${fmt(h.p.price)}・${h.p.yld}%${monoOf(h.t)===0?'・買い占め':''}</div></div>`).join(''):'<p class="lead">まだ物件がありません。町の駅に止まると買えます。</p>';
-  return modal('あなたの物件',`年間収益の見込み ${fmt(yearIncome(0))}`,body,[{label:'閉じる',v:1,cls:'ghost'}]);
+  const body=hs.length?hs.map(h=>`<div class="prop"><div class="pn">${h.p.name}${h.p.farm?farmTag:''}${stars(lvOf(h.t,h.i))}</div><span class="pm">${nodes[h.t].name}</span><div class="pm">価値 ${fmt(valOf(h.t,h.i))}・年収益 ${fmt(incomeOf(h.t,h.i,0))}${monoOf(h.t)===0?'・買い占め':''}</div></div>`).join(''):'<p class="lead">まだ物件がありません。町の駅に止まると買えます。</p>';
+  return modal('あなたの物件',`年間収益の見込み ${fmt(yearIncome(0))}。増資はその町に止まったときにできます。`,body,[{label:'閉じる',v:1,cls:'ghost'}]);
 }
-function yearIncome(pi,farmOnly){return holdings(pi).filter(h=>!farmOnly||h.p.farm).reduce((s,h)=>s+Math.round(h.p.price*h.p.yld/100*(monoOf(h.t)===pi?2:1)),0);}
+function yearIncome(pi,farmOnly){return holdings(pi).filter(h=>!farmOnly||h.p.farm).reduce((s,h)=>s+incomeOf(h.t,h.i,pi),0);}
 
 /* ---------- dice ---------- */
 async function rollDice(n){
   const d=$('dice');d.classList.toggle('small',n>1);
   const t0=Date.now();
-  while(Date.now()-t0<700){d.textContent=Array.from({length:n},()=>rnd(1,6)).join('');await sleep(60);}
+  while(Date.now()-t0<700){d.textContent=Array.from({length:n},()=>rnd(1,6)).join('');Snd.se('tick');await sleep(60);}
   const v=Array.from({length:n},()=>rnd(1,6));const sum=v.reduce((a,b)=>a+b,0);
   d.textContent=n>1?sum:v[0];d.classList.toggle('small',false);
   return {v,sum};
 }
 
-/* ---------- movement ---------- */
-function pickNode(opts){return new Promise(res=>{highlights=opts.map(id=>({id,fn:()=>{highlights=[];res(id);}}));render();});}
-function cpuPick(p,opts){
-  if(Math.random()<.12)return pick(opts);
-  let best=Infinity,bs=[];opts.forEach(o=>{const d=DIST[o][S.goal];if(d<best){best=d;bs=[o];}else if(d===best)bs.push(o);});
-  return pick(bs);
+/* ---------- movement：出た目で行けるマスから行き先を選ぶ（どの方向へも、引き返してもOK） ---------- */
+let preview=null;
+function reachable(start,N){
+  const out=new Map();let layer=new Map([[start,{path:[start],rev:0}]]);
+  for(let s=1;s<=N;s++){const next=new Map();
+    for(const [id,{path,rev}] of layer){
+      if(id===S.goal&&id!==start)continue;           // 目的地に着いたらそこで止まる
+      for(const n of adj[id]){
+        const r=rev+(path.length>1&&path[path.length-2]===n?1:0),np=path.concat(n);
+        if(n===S.goal&&!out.has(n))out.set(n,np);
+        const ex=next.get(n);if(!ex||r<ex.rev)next.set(n,{path:np,rev:r});
+      }}
+    layer=next;}
+  for(const [id,{path}] of layer)if(id!==start&&!out.has(id))out.set(id,path);
+  return out;
+}
+const MOVE_MSG='光っているマスから行き先をタップしてください（どの方向でもOK）';
+function chooseDest(cands){
+  return new Promise(res=>{
+    const ids=[...cands.keys()];
+    const sel=id=>{preview=cands.get(id);render();
+      const n=nodes[id];
+      actions([{label:`${n.type==='town'?n.name:'このマス'}へ進む`,v:'go',cls:'main'},{label:'選びなおす',v:'re',cls:'ghost'}]).then(v=>{
+        if(v==='go'){highlights=[];preview=null;render();res(id);}else{preview=null;render();waitingMsg(MOVE_MSG);}});};
+    highlights=ids.map(id=>({id,fn:()=>sel(id)}));render();waitingMsg(MOVE_MSG);
+    fitIds([...ids,S.players[S.turn].pos]);
+  });
+}
+function cpuDest(pi,cands){
+  const p=S.players[pi];
+  if(cands.has(S.goal))return S.goal;
+  let tgt=S.goal;
+  if(nodes[p.pos].world){
+    if(!p.wt||p.wt===p.pos||!nodes[p.wt].world)p.wt=pick(allTownIds.filter(t=>nodes[t].world&&t!==p.pos));
+    tgt=p.wt;
+  }
+  let best=null,bs=Infinity;
+  for(const [id,path] of cands){const n=nodes[id];let sc=DIST[id][tgt]??99;
+    if(n.type==='town'&&n.props.some((pr,i)=>ownerOf(id,i)==null&&pr.price<=p.money-200))sc-=3;
+    if(n.type==='plus')sc-=1;if(n.type==='minus')sc+=1.5;if(n.type==='card')sc-=.5;
+    if(S.crow.at&&path.includes(S.crow.at))sc+=6;
+    sc+=Math.random()*1.5;
+    if(sc<bs){bs=sc;best=id;}}
+  return best;
 }
 async function move(pi,steps){
   const p=S.players[pi],o=S.players[1-pi];
+  const cands=reachable(p.pos,steps);
+  let dest;
+  if(p.cpu){dest=cpuDest(pi,cands);preview=cands.get(dest);fitIds([...cands.keys(),p.pos]);render();await sleep(700);preview=null;}
+  else dest=await chooseDest(cands);
+  const path=cands.get(dest);
   $('steps').hidden=false;
-  for(let left=steps;left>0;left--){
-    $('stepsN').textContent=left;
-    let opts=adj[p.pos].filter(n=>n!==p.prev);if(!opts.length)opts=adj[p.pos];
-    let nx;
-    if(opts.length===1)nx=opts[0];
-    else if(p.cpu)nx=cpuPick(p,opts);
-    else{waitingMsg('光っているマスをタップして進む方向を選んでください');nx=await pickNode(opts);}
-    p.prev=p.pos;p.pos=nx;lookAt(nx);
-    if(S.crow.at===nx&&S.crow.holder==null){S.crow.holder=pi;S.crow.at=null;render();await toast(`渋柿ガラスが${p.name}についてきた！`,1300);}
+  for(let s=1;s<path.length;s++){const nx=path[s];
+    $('stepsN').textContent=path.length-1-s;
+    p.prev=p.pos;p.pos=nx;lookAt(nx);Snd.se('step');
+    if(S.crow.at===nx&&S.crow.holder==null){S.crow.holder=pi;S.crow.at=null;if(!p.cpu)Snd.jingle('bad');render();await toast(`渋柿ガラスが${p.name}についてきた！`,1300);}
     else if(S.crow.holder===pi&&o.pos===nx){S.crow.holder=1-pi;render();await toast(`カラスが${o.name}に飛び移った！`,1300);}
     render();
-    await sleep(p.cpu?230:260);
-    if(nx===S.goal)break;
+    await sleep(p.cpu?200:230);
   }
   $('steps').hidden=true;
+}
+
+/* ---------- 飛行機 ---------- */
+const fare=(a,b)=>Math.max(50,Math.round((60+geoKm(a,b)*.12)*yf()/10)*10);
+function flightSheet(pi,free){
+  const p=S.players[pi];
+  return new Promise(res=>{
+    const sh=$('sheet'),list=airportIds.filter(a=>a!==p.pos);
+    const home=nodes[p.pos].world;
+    const row=a=>{const f=free?0:fare(p.pos,a),d=DIST[a][S.goal],later=home&&!nodes[a].world&&p.money<f;
+      return `<div class="cardrow"><div class="cn">${nodes[a].name}</div><button class="btn main" data-a="${a}" ${p.money<f&&!later?'disabled':''}>${free?'無料で飛ぶ':fmt(f)+(later?'（後払い）':'')}</button><div class="cd">${a===S.goal?'<b>目的地！</b>':nodes[a].world?'海外の町・物件は高収益':d!=null?`目的地まで${d}マス`:''}</div></div>`;};
+    sh.innerHTML=`<h2>飛行機</h2><p class="lead">${free?'飛行機札で、好きな空港へ無料で飛べます。':'空港のある町から、ほかの空港へひとっ飛び。運賃は距離で決まり、サイコロの代わりになります。'}所持金 ${fmt(p.money)}</p>
+      <div class="body">${home&&!free?'<p class="lead">日本への帰国便は、お金が足りなくても後払いで乗れます（足りない分は物件を売って払います）。</p>':''}<h3 class="subh">国内線</h3>${list.filter(a=>!nodes[a].world).map(row).join('')}<h3 class="subh">国際線</h3>${list.filter(a=>nodes[a].world).map(row).join('')}</div>
+      <div class="btns"><button class="btn ghost" id="flyBack">やめる</button></div>`;
+    sh.querySelectorAll('[data-a]').forEach(b=>b.onclick=()=>{$('ov').hidden=true;res(b.dataset.a);});
+    $('flyBack').onclick=()=>{$('ov').hidden=true;res(null);};
+    $('ov').hidden=false;sh.scrollTop=0;
+  });
+}
+async function fly(pi,dest,cost){
+  const p=S.players[pi],from=p.pos,A=nodes[from],B=nodes[dest];
+  p.money-=cost;
+  log(`${p.name}は${A.name}から${B.name}へ飛行機で移動${cost?`（運賃 ${fmt(cost)}）`:''}`);
+  Snd.se('fly');
+  p.flying=true;render();
+  fitBox(Math.min(A.x,B.x),Math.min(A.y,B.y),Math.max(A.x,B.x),Math.max(A.y,B.y));
+  const fx=$('fx');fx.innerHTML='';
+  const dist=Math.hypot(B.x-A.x,B.y-A.y),mx=(A.x+B.x)/2,my=(A.y+B.y)/2-dist*.25;
+  el('path',{d:`M${A.x},${A.y} Q${mx},${my} ${B.x},${B.y}`,fill:'none',stroke:'#fffaf0','stroke-width':2,'stroke-dasharray':'4 6',opacity:.8},fx);
+  const pl=el('g',{},fx);el('circle',{r:13,fill:p.color,stroke:'#fff','stroke-width':2.5},pl);el('path',{d:PLANE,fill:'#fff',transform:'scale(.9)'},pl);
+  await sleep(500);
+  const dur=reduced?300:Math.min(2600,900+dist*1.4),t0=performance.now();
+  await new Promise(r=>{const step=now=>{const u=Math.min(1,(now-t0)/dur),e=u<.5?2*u*u:1-Math.pow(-2*u+2,2)/2;
+      const x=(1-e)*(1-e)*A.x+2*(1-e)*e*mx+e*e*B.x,y=(1-e)*(1-e)*A.y+2*(1-e)*e*my+e*e*B.y;
+      const dx=2*(1-e)*(mx-A.x)+2*e*(B.x-mx),dy=2*(1-e)*(my-A.y)+2*e*(B.y-my),ang=Math.atan2(dy,dx)*180/Math.PI+90;
+      pl.setAttribute('transform',`translate(${x},${y}) rotate(${ang}) scale(${1+.5*Math.sin(Math.PI*u)})`);
+      if(u<1)requestAnimationFrame(step);else r();};requestAnimationFrame(step);});
+  fx.innerHTML='';p.flying=false;p.prev=null;p.pos=dest;
+  if(p.money<0)await forceSell(pi);
+  if(S.crow.at===dest&&S.crow.holder==null){S.crow.holder=pi;S.crow.at=null;}
+  lookAt(dest);render();await sleep(300);
+}
+async function cpuMaybeFly(pi){
+  const p=S.players[pi],n=nodes[p.pos];
+  if(!n.airport)return false;
+  const homeBest=()=>airportIds.filter(a=>!nodes[a].world).sort((a,b)=>DIST[a][S.goal]-DIST[b][S.goal])[0];
+  if(n.world){
+    p.wturns=(p.wturns||0)+1;
+    if(p.wturns>=3||p.money<500){const j=homeBest(),f=fare(p.pos,j);
+      {await toast(`${p.name}は日本へ帰る`,1000);await fly(pi,j,f);p.wt=null;p.wturns=0;return true;}}
+    return false;
+  }
+  const here=DIST[p.pos][S.goal],best=homeBest();
+  if(best!==p.pos&&here-DIST[best][S.goal]>=12){const f=fare(p.pos,best);if(p.money>=f*3){await fly(pi,best,f);return true;}}
+  if(p.money>=6000*yf()&&Math.random()<.35){const w=pick(airportIds.filter(a=>nodes[a].world)),f=fare(p.pos,w);
+    if(p.money-f>=4000){await toast(`${p.name}が海外進出をねらっている！`,1200);await fly(pi,w,f);p.wturns=0;p.wt=null;return true;}}
+  return false;
 }
 
 /* ---------- squares ---------- */
 async function forceSell(pi){
   const p=S.players[pi];
-  while(p.money<0){const hs=holdings(pi).sort((a,b)=>a.p.price-b.p.price);if(!hs.length)break;
-    const h=hs[0];delete S.owners[key(h.t,h.i)];const got=Math.round(h.p.price/2);p.money+=got;
+  while(p.money<0){const hs=holdings(pi).sort((a,b)=>valOf(a.t,a.i)-valOf(b.t,b.i));if(!hs.length)break;
+    const h=hs[0],got=Math.round(valOf(h.t,h.i)/2);delete S.owners[key(h.t,h.i)];delete S.levels[key(h.t,h.i)];p.money+=got;
     log(`${p.name}は借金のため${h.p.name}を${fmt(got)}で売った`);await toast(`${h.p.name}を手放した…`,1100);}
 }
 async function arrive(pi){
+  Snd.jingle('goal');
   const p=S.players[pi];const r=S.goalReward;p.money+=r;
   log(`${p.name}が${nodes[S.goal].name}に一番乗り！ ${fmt(r)}`);
   const from=S.goal;setGoal(from);
@@ -524,22 +712,22 @@ async function arrive(pi){
   lookAt(S.goal);await sleep(1300);lookAt(p.pos);
 }
 async function land(pi){
-  const p=S.players[pi],n=nodes[p.pos];
+  const p=S.players[pi],n=nodes[p.pos],wm=n.world?2:1;
   if(p.pos===S.goal)await arrive(pi);
   if(n.type==='town'){
     if(p.cpu)await cpuShop(pi,p.pos);else await humanShop(pi,p.pos);
   }else if(n.type==='plus'){
     const harvest=S.month===10||S.month===11;
-    const a=Math.round(rnd(100,400)*yf()*(harvest?2:1)/10)*10;p.money+=a;
-    log(`${p.name}：青マス ${harvest?'収穫祭で':''}+${fmt(a)}`);await toast(`${harvest?'収穫祭！ ':''}+${fmt(a)}`,1100);
+    const a=Math.round(rnd(100,400)*yf()*wm*(harvest?2:1)/10)*10;p.money+=a;
+    Snd.se('coin');log(`${p.name}：青マス ${harvest?'収穫祭で':''}+${fmt(a)}`);await toast(`${harvest?'収穫祭！ ':''}+${fmt(a)}`,1100);
   }else if(n.type==='minus'){
-    const winter=[12,1,2].includes(S.month);
-    const a=Math.round(rnd(50,300)*yf()*(winter?1.5:1)/10)*10;p.money-=a;
-    log(`${p.name}：赤マス ${winter?'雪害で':''}−${fmt(a)}`);await toast(`${winter?'雪害… ':''}−${fmt(a)}`,1100);
+    const winter=[12,1,2].includes(S.month)&&!n.world;
+    const a=Math.round(rnd(50,300)*yf()*wm*(winter?1.5:1)/10)*10;p.money-=a;
+    Snd.se('minus');log(`${p.name}：赤マス ${winter?'雪害で':''}−${fmt(a)}`);await toast(`${winter?'雪害… ':''}−${fmt(a)}`,1100);
     await forceSell(pi);
   }else if(n.type==='card'){
     if(p.cards.length>=6){log(`${p.name}：札がいっぱいでもらえない`);await toast('札がいっぱい',900);}
-    else{const c=pick(CARD_POOL);p.cards.push(c);log(`${p.name}：${CARDS[c].name}を手に入れた`);await toast(p.cpu?`${p.name}は札を手に入れた`:`${CARDS[c].name}を手に入れた`,1100);}
+    else{const c=pick(CARD_POOL);p.cards.push(c);Snd.se('card');log(`${p.name}：${CARDS[c].name}を手に入れた`);await toast(p.cpu?`${p.name}は札を手に入れた`:`${CARDS[c].name}を手に入れた`,1100);}
   }
   render();
 }
@@ -548,11 +736,17 @@ async function land(pi){
 function cardUsable(pi,c){return c!=='toriyoke'||S.crow.holder===pi;}
 async function useCard(pi,c){ // returns {dice} | {done} | {}
   const p=S.players[pi],o=S.players[1-pi];
+  let flyTo=null;
+  if(c==='hikoki'){
+    flyTo=p.cpu?airportIds.filter(a=>!nodes[a].world).sort((a,b)=>DIST[a][S.goal]-DIST[b][S.goal])[0]:await flightSheet(pi,true);
+    if(!flyTo)return {};
+  }
   p.cards.splice(p.cards.indexOf(c),1);
   log(`${p.name}は${CARDS[c].name}を使った`);
   if(c==='hayagake')return {dice:2};
   if(c==='tokkyu')return {dice:3};
-  if(c==='toriyoke'){S.crow.holder=null;const far=plainIds.filter(id=>DIST[id][S.players[0].pos]>=4&&DIST[id][S.players[1].pos]>=4);S.crow.at=pick(far.length?far:plainIds);render();await toast('渋柿ガラスは飛んでいった',1200);return {};}
+  if(c==='hikoki'){await fly(pi,flyTo,0);return {done:true};}
+  if(c==='toriyoke'){S.crow.holder=null;const far=plainIds.filter(id=>(DIST[id][S.players[0].pos]??99)>=4&&(DIST[id][S.players[1].pos]??99)>=4);S.crow.at=pick(far.length?far:plainIds);render();await toast('渋柿ガラスは飛んでいった',1200);return {};}
   if(c==='hosaku'){const a=Math.round(rnd(300,600)*yf()/10)*10;p.money+=a;render();await toast(`豊作！ +${fmt(a)}`,1100);return {};}
   if(c==='ashidome'){o.skip=1;render();await toast(`${o.name}は次の番お休み`,1200);return {};}
   if(c==='tobi'){const t=pick(townIds.filter(x=>x!==p.pos));p.prev=null;p.pos=t;lookAt(t);
@@ -577,27 +771,34 @@ async function cpuShop(pi,t){
   const order=ps.map((pr,i)=>({pr,i})).filter(x=>ownerOf(t,x.i)==null).sort((a,b)=>b.pr.yld-a.pr.yld);
   let bought=[];
   for(const x of order){if(p.money-x.pr.price>=200){p.money-=x.pr.price;S.owners[key(t,x.i)]=pi;bought.push(x.pr.name);}}
-  // M&A: 収益率の高い相手物件を1件だけ、資金に余裕があれば買収
+  // M&A: 収益の高い相手物件を1件だけ、資金に余裕があれば買収
   const targets=ps.map((pr,i)=>({pr,i})).filter(x=>{const o=ownerOf(t,x.i);return o!=null&&o!==pi;})
-    .sort((a,b)=>b.pr.price*b.pr.yld-a.pr.price*a.pr.yld);
+    .sort((a,b)=>incomeOf(t,b.i,1-pi)-incomeOf(t,a.i,1-pi));
   for(const x of targets){const c=maPrice(t,x.i);
     if(p.money-c>=500&&Math.random()<.75){const r=await doMA(pi,t,x.i);render();
       await modal('M&Aされました',`${p.name}があなたの物件を買収しました。`,`<p><b>${r.pr.name}</b>（${nodes[t].name}）</p><div class="big">+${fmt(r.c)}</div><p>買収代金があなたに支払われました。${r.brokeMono?'買い占めが崩れました。':''}${monoOf(t)===pi?`${p.name}が${nodes[t].name}を買い占めました。`:''}</p>`);
       break;}}
+  // 増資：手元資金に余裕があれば収益率の高い物件から
+  let inv=0;
+  ps.map((pr,i)=>({pr,i})).filter(x=>ownerOf(t,x.i)===pi).sort((a,b)=>b.pr.yld-a.pr.yld).forEach(x=>{
+    while(lvOf(t,x.i)<MAXLV&&p.money-investCost(t,x.i)>=800&&Math.random()<.7){p.money-=investCost(t,x.i);S.levels[key(t,x.i)]=lvOf(t,x.i)+1;inv++;}});
   render();
   if(bought.length){log(`${p.name}は${bought.join('、')}を買った`);await toast(`${p.name}が${bought.length}件買った`,1300);if(monoOf(t)===pi)await toast(`${p.name}が${nodes[t].name}を買い占め！`,1300);}
-  else await sleep(400);
+  if(inv){log(`${p.name}は${nodes[t].name}の物件に${inv}回増資した`);await toast(`${p.name}が${inv}回増資した`,1200);}
+  if(!bought.length&&!inv)await sleep(400);
 }
 async function cpuTurnCards(pi){
   const p=S.players[pi],o=S.players[1-pi];
   const has=c=>p.cards.includes(c);
   if(S.crow.holder===pi&&has('toriyoke'))await useCard(pi,'toriyoke');
   if(has('hosaku'))await useCard(pi,'hosaku');
-  if(has('ashidome')&&!o.skip&&DIST[o.pos][S.goal]<DIST[p.pos][S.goal]&&Math.random()<.7)await useCard(pi,'ashidome');
-  const d=DIST[p.pos][S.goal];
+  const inW=nodes[p.pos].world,d=inW?8:DIST[p.pos][S.goal],od=DIST[o.pos][S.goal]??99;
+  if(has('ashidome')&&!o.skip&&od<d&&Math.random()<.7)await useCard(pi,'ashidome');
+  if(await cpuMaybeFly(pi))return 0;
+  if(!inW&&d>=15&&has('hikoki')){await useCard(pi,'hikoki');return 0;}
   if(d>=9&&has('tokkyu')){return (await useCard(pi,'tokkyu')).dice;}
   if(d>=6&&has('hayagake')){return (await useCard(pi,'hayagake')).dice;}
-  if(d>=12&&has('tobi')&&Math.random()<.5){await useCard(pi,'tobi');return 0;}
+  if(!inW&&d>=12&&has('tobi')&&Math.random()<.5){await useCard(pi,'tobi');return 0;}
   return 1;
 }
 
@@ -613,10 +814,14 @@ async function playTurn(pi){
   }else{
     for(;;){
       idle=true;
-      const v=await actions([{label:'サイコロを振る',v:'roll',cls:'main'},{label:`札 ${p.cards.length}`,v:'card'},{label:'物件',v:'hold',cls:'ghost'}]);
+      const btns=[{label:'サイコロを振る',v:'roll',cls:'main'},{label:`札 ${p.cards.length}`,v:'card'}];
+      if(nodes[p.pos].airport)btns.push({label:'✈ 飛行機',v:'fly'});
+      btns.push({label:'物件',v:'hold',cls:'ghost'});
+      const v=await actions(btns);
       idle=false;
       if(v==='roll')break;
       if(v==='hold'){await showHoldings();continue;}
+      if(v==='fly'){const d=await flightSheet(pi,false);if(!d)continue;await fly(pi,d,fare(p.pos,d));await land(pi);return;}
       const c=await humanCardSheet(pi);
       if(!c)continue;
       const r=await useCard(pi,c);
@@ -634,7 +839,7 @@ async function playTurn(pi){
 async function crowMischief(pi){
   if(S.crow.holder!==pi)return;
   const p=S.players[pi];const r=Math.random();
-  if(r<.45){const a=Math.round(rnd(100,450)*yf()/10)*10;p.money-=a;log(`渋柿ガラスが${p.name}の柿を渋くした −${fmt(a)}`);await toast(`カラスが柿をつついた！ −${fmt(a)}`,1400);await forceSell(pi);}
+  if(r<.45){const a=Math.round(rnd(100,450)*yf()/10)*10;p.money-=a;log(`渋柿ガラスが${p.name}の柿を渋くした −${fmt(a)}`);Snd.se('minus');await toast(`カラスが柿をつついた！ −${fmt(a)}`,1400);await forceSell(pi);}
   else if(r<.62&&p.cards.length){const c=p.cards.splice(rnd(0,p.cards.length-1),1)[0];log(`渋柿ガラスが${p.name}の${CARDS[c].name}をくわえていった`);await toast(`カラスが${CARDS[c].name}を持っていった`,1400);}
   else{await toast('カラスは「カァ」と鳴いた',900);}
   render();
@@ -643,13 +848,15 @@ async function harvest(){
   const inc=[0,1].map(pi=>yearIncome(pi,true));
   inc.forEach((a,pi)=>S.players[pi].money+=a);
   log(`10月の収穫：あなた +${fmt(inc[0])}／栗山社長 +${fmt(inc[1])}`);
-  await modal('柿の収穫','柿畑の物件から収穫の売上が入りました。',`<table class="res"><tr><th></th><th>収穫</th></tr><tr><td>あなた</td><td>+${fmt(inc[0])}</td></tr><tr><td>栗山社長</td><td>+${fmt(inc[1])}</td></tr></table>`);
+  Snd.jingle('harvest');
+  await modal('柿の収穫','農園（柿畑など）の物件から収穫の売上が入りました。',`<table class="res"><tr><th></th><th>収穫</th></tr><tr><td>あなた</td><td>+${fmt(inc[0])}</td></tr><tr><td>栗山社長</td><td>+${fmt(inc[1])}</td></tr></table>`);
 }
 async function settlement(){
   const inc=[0,1].map(pi=>yearIncome(pi));
   inc.forEach((a,pi)=>S.players[pi].money+=a);
   log(`${S.year}年目の決算：あなた +${fmt(inc[0])}／栗山社長 +${fmt(inc[1])}`);
   render();
+  Snd.jingle('settle');
   await modal(`${S.year}年目 決算`,'物件の収益が入りました。',`<table class="res"><tr><th></th><th>収益</th><th>総資産</th></tr>${[0,1].map(pi=>`<tr><td>${S.players[pi].name}</td><td>+${fmt(inc[pi])}</td><td>${fmt(assets(pi))}</td></tr>`).join('')}</table>`);
 }
 async function advanceMonth(){
@@ -662,7 +869,7 @@ async function advanceMonth(){
   S.month=S.month%12+1;
   if(!S.crow.spawned&&S.year===1&&S.month===6){
     S.crow.spawned=true;
-    const c=plainIds.filter(id=>DIST[id][S.players[0].pos]>=5&&DIST[id][S.players[0].pos]<=14&&DIST[id][S.players[1].pos]>=5);
+    const c=plainIds.filter(id=>{const a=DIST[id][S.players[0].pos]??99,b=DIST[id][S.players[1].pos]??99;return a>=5&&a<=14&&b>=5;});
     S.crow.at=pick(c.length?c:plainIds);render();lookAt(S.crow.at);await sleep(700);
     await modal('渋柿ガラスがあらわれた','日本のどこかに渋柿ガラスが降りてきました。',`<p>カラスのいるマスを通ると、ついてきて毎月いたずらをします。ついたまま相手のコマを通り過ぎれば、相手に押しつけられます。<b>鳥よけ札</b>でも追い払えます。</p>`);
   }
@@ -671,6 +878,7 @@ async function advanceMonth(){
 async function gameOver(){
   clearSave();
   const a=[0,1].map(assets);const win=a[0]>a[1]?0:a[1]>a[0]?1:-1;
+  Snd.jingle(win===1?'lose':'win');
   render();
   await modal(win===0?'あなたの勝ち！':win===1?'栗山社長の勝ち':'引き分け',`${S.years}年間の結果です。`,
    `<table class="res"><tr><th></th><th>所持金</th><th>物件</th><th>総資産</th></tr>${[0,1].map(pi=>`<tr><td>${S.players[pi].name}</td><td>${fmt(S.players[pi].money)}</td><td>${holdings(pi).length}件</td><td><b>${fmt(a[pi])}</b></td></tr>`).join('')}</table>`,
@@ -695,6 +903,120 @@ async function loop(){
   await gameOver();
 }
 
+/* ---------- sound: オリジナルBGM（Web Audioで生成） ---------- */
+const Snd=(()=>{
+  let ctx=null,master,mus,sfx,pulseW,noiseB,on=true,cur=null,curKey=null,timer=null;
+  try{on=localStorage.getItem('kakitaro-sound')!=='off';}catch(e){}
+  const NOTE={C:0,D:2,E:4,F:5,G:7,A:9,B:11};
+  const midi=s=>{const m=/^([A-G])(#?)(\d)$/.exec(s);return 12*(+m[3]+1)+NOTE[m[1]]+(m[2]?1:0);};
+  const hz=m=>440*Math.pow(2,(m-69)/12);
+  const parse=s=>s.trim().split(/\s+/).map(t=>{const [n,b]=t.split(':');return {m:n==='R'?null:midi(n),b:+b};});
+  // 柿太郎のテーマ（汽車のリズムに乗せた五音音階のマーチ）
+  const MEL_A='E5:.5 G5:.5 A5:1 G5:.5 E5:.5 D5:1  C5:.5 D5:.5 E5:.5 G5:.5 E5:2  A5:.5 C6:.5 A5:.5 G5:.5 E5:1 G5:1  D5:.5 E5:.5 D5:.5 C5:.5 D5:2 '+
+              'E5:.5 G5:.5 A5:1 C6:.5 A5:.5 G5:1  A5:.5 G5:.5 E5:.5 D5:.5 E5:1 G5:1  A5:1 G5:.5 E5:.5 D5:.5 E5:.5 D5:.5 C5:.5  C5:3 R:1';
+  const MEL_B=' F5:1 A5:1 C6:1 A5:1  G5:.5 A5:.5 G5:.5 E5:.5 C5:2  F5:1 A5:1 C6:.5 D6:.5 C6:1  A5:.5 G5:.5 E5:.5 G5:.5 A5:2 '+
+              'D6:.5 C6:.5 A5:.5 G5:.5 A5:1 C6:1  G5:.5 E5:.5 D5:.5 E5:.5 G5:2  A5:.5 G5:.5 E5:.5 D5:.5 C5:.5 D5:.5 E5:.5 G5:.5  C5:2 R:2';
+  const CH_A='C C Am G C Am F,G C', CH_B=' F C F Am Dm C F,G C';
+  // 渋柿ガラスのテーマ（短調）
+  const MEL_CROW='A4:1 C5:.5 B4:.5 A4:1 E4:1  F4:1 E4:.5 D#4:.5 E4:2  A4:.5 B4:.5 C5:.5 D5:.5 E5:1 C5:1  B4:1 G#4:1 A4:2';
+  const DEFS={
+    title:{bpm:156,lead:'square',lv:.05,mel:MEL_A,ch:CH_A,dr:'full'},
+    spring:{bpm:140,lead:'pulse',lv:.08,mel:MEL_A+MEL_B,ch:CH_A+CH_B,dr:'full'},
+    summer:{bpm:150,lead:'square',lv:.05,tr:2,mel:MEL_A+MEL_B,ch:CH_A+CH_B,dr:'full'},
+    autumn:{bpm:126,lead:'pulse',lv:.08,tr:-3,mel:MEL_A+MEL_B,ch:CH_A+CH_B,dr:'full'},
+    winter:{bpm:110,lead:'triangle',lv:.17,mel:MEL_A+MEL_B,ch:CH_A+CH_B,dr:'kick'},
+    crow:{bpm:96,lead:'square',lv:.04,mel:MEL_CROW,ch:'Am F,E Am E,Am',dr:'kick'},
+  };
+  const JINGLES={
+    goal:{bpm:150,lead:'square',mel:'C5:.25 E5:.25 G5:.25 C6:.75 G5:.25 C6:1.5',end:'C'},
+    settle:{bpm:160,lead:'square',mel:'G4:.5 C5:.5 E5:.5 G5:.5 E5:.5 G5:.5 C6:2',end:'C'},
+    harvest:{bpm:170,lead:'pulse',mel:'E5:.5 G5:.5 A5:.5 C6:.5 D6:.5 C6:.5 A5:.5 C6:2',end:'C'},
+    bad:{bpm:120,lead:'triangle',mel:'B4:.5 A#4:.5 A4:.5 G#4:1.5',end:'E'},
+    win:{bpm:150,lead:'square',mel:'C5:.5 C5:.5 C5:.5 E5:.5 G5:1 E5:.5 G5:.5 C6:3',end:'C'},
+    lose:{bpm:110,lead:'triangle',mel:'E5:1 D5:1 C5:1 G4:.5 A4:.5 C5:3',end:'Am'},
+  };
+  const chord=n=>({r:NOTE[n[0]]+(n[1]==='#'?1:0),third:n.endsWith('m')?3:4});
+  const cache={};
+  function build(key){
+    if(cache[key])return cache[key];
+    const def=DEFS[key],tr=def.tr||0,ev=[];let t=0;
+    parse(def.mel).forEach(n=>{if(n.m!=null)ev.push({t,d:n.b*.85,f:hz(n.m+tr),v:def.lv,w:def.lead});t+=n.b;});
+    def.ch.trim().split(/\s+/).forEach((bar,i)=>{const parts=bar.split(','),pl=4/parts.length;
+      parts.forEach((c,j)=>{const cd=chord(c),t0=i*4+j*pl,root=36+cd.r+tr;
+        for(let q=0;q<pl*2;q++)ev.push({t:t0+q*.5,d:.38,f:hz(root+[0,7,12,7][q%4]),v:.12,w:'triangle'});
+        for(let q=1;q<pl;q+=2)[0,cd.third,7].forEach(o=>ev.push({t:t0+q,d:.22,f:hz(60+cd.r+o+tr),v:.02,w:'pulse'}));
+        for(let q=0;q<pl;q++){if(q%2===0)ev.push({t:t0+q,k:'kick'});if(def.dr==='full')ev.push({t:t0+q+.5,k:'hat'});}
+      });});
+    ev.sort((a,b)=>a.t-b.t);
+    return cache[key]={ev,len:t,spb:60/def.bpm};
+  }
+  function tone(f,t,d,v,w,dest,slide){
+    const o=ctx.createOscillator(),g=ctx.createGain();
+    if(w==='pulse')o.setPeriodicWave(pulseW);else o.type=w;
+    o.frequency.setValueAtTime(f,t);if(slide)o.frequency.exponentialRampToValueAtTime(slide,t+d);
+    g.gain.setValueAtTime(v,t);g.gain.setTargetAtTime(v*.55,t+.01,.12);g.gain.setTargetAtTime(0,t+d,.03);
+    o.connect(g).connect(dest);o.start(t);o.stop(t+d+.25);
+  }
+  function drum(k,t,dest){
+    if(k==='kick'){const o=ctx.createOscillator(),g=ctx.createGain();o.frequency.setValueAtTime(140,t);o.frequency.exponentialRampToValueAtTime(45,t+.1);
+      g.gain.setValueAtTime(.22,t);g.gain.exponentialRampToValueAtTime(.001,t+.13);o.connect(g).connect(dest);o.start(t);o.stop(t+.15);}
+    else{const s=ctx.createBufferSource(),h=ctx.createBiquadFilter(),g=ctx.createGain();s.buffer=noiseB;h.type='highpass';h.frequency.value=6500;
+      g.gain.setValueAtTime(.05,t);g.gain.exponentialRampToValueAtTime(.001,t+.045);s.connect(h).connect(g).connect(dest);s.start(t);s.stop(t+.06);}
+  }
+  function tick(){
+    if(!cur)return;const now=ctx.currentTime,ahead=now+.25;
+    for(;;){const e=cur.ev[cur.idx],at=cur.t0+e.t*cur.spb;if(at>ahead)break;
+      if(at>=now-.05){if(e.k)drum(e.k,at,cur.out);else tone(e.f,at,e.d*cur.spb,e.v,e.w,cur.out);}
+      if(++cur.idx>=cur.ev.length){cur.idx=0;cur.t0+=cur.len*cur.spb;}}
+  }
+  function stopMusic(){clearInterval(timer);timer=null;if(cur){const o=cur.out;o.gain.setTargetAtTime(0,ctx.currentTime,.05);setTimeout(()=>o.disconnect(),400);cur=null;}}
+  function startMusic(){
+    if(!ctx)return;stopMusic();if(!on||!curKey)return;
+    const b=build(curKey),out=ctx.createGain();out.connect(mus);
+    cur={...b,idx:0,t0:ctx.currentTime+.08,out};timer=setInterval(tick,30);tick();
+  }
+  function init(){
+    if(ctx){if(ctx.state==='suspended')ctx.resume();return;}
+    const AC=window.AudioContext||window.webkitAudioContext;if(!AC)return;
+    ctx=new AC();master=ctx.createGain();master.gain.value=.8;master.connect(ctx.destination);
+    mus=ctx.createGain();mus.connect(master);sfx=ctx.createGain();sfx.connect(master);
+    const N=32,re=new Float32Array(N),im=new Float32Array(N);for(let n=1;n<N;n++)im[n]=2/(n*Math.PI)*Math.sin(n*Math.PI*.25);
+    pulseW=ctx.createPeriodicWave(re,im);
+    noiseB=ctx.createBuffer(1,ctx.sampleRate*.2,ctx.sampleRate);const d=noiseB.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=Math.random()*2-1;
+    document.addEventListener('visibilitychange',()=>{if(!ctx)return;if(document.hidden)ctx.suspend();else ctx.resume();});
+    startMusic();
+  }
+  function music(key){if(key===curKey&&(cur||!on||!ctx))return;curKey=key;startMusic();}
+  function jingle(key){
+    if(!ctx||!on)return;const j=JINGLES[key],spb=60/j.bpm,t0=ctx.currentTime+.03;let t=0;
+    parse(j.mel).forEach(n=>{if(n.m!=null)tone(hz(n.m),t0+t*spb,n.b*spb*.9,j.lead==='triangle'?.18:.08,j.lead,sfx);t+=n.b;});
+    const cd=chord(j.end),at=t0+(t-parse(j.mel).slice(-1)[0].b)*spb;
+    [0,cd.third,7].forEach(o=>tone(hz(60+cd.r+o),at,1.2,.035,'pulse',sfx));tone(hz(36+cd.r),at,1.2,.14,'triangle',sfx);
+    const dur=t*spb;mus.gain.cancelScheduledValues(ctx.currentTime);mus.gain.setTargetAtTime(.12,ctx.currentTime,.04);mus.gain.setTargetAtTime(1,ctx.currentTime+dur+.2,.25);
+  }
+  function se(name){
+    if(!ctx||!on)return;const t=ctx.currentTime+.005;
+    if(name==='tick')tone(1300+Math.random()*300,t,.025,.035,'square',sfx);
+    else if(name==='step')tone(520,t,.05,.07,'triangle',sfx,300);
+    else if(name==='coin'){tone(hz(83),t,.07,.05,'square',sfx);tone(hz(88),t+.07,.28,.05,'square',sfx);}
+    else if(name==='buy'){tone(hz(84),t,.06,.05,'pulse',sfx);tone(hz(91),t+.06,.06,.05,'pulse',sfx);tone(hz(96),t+.12,.25,.05,'pulse',sfx);}
+    else if(name==='minus')tone(420,t,.32,.05,'sawtooth',sfx,110);
+    else if(name==='fly'){const o=ctx.createOscillator(),g=ctx.createGain();o.type='triangle';o.frequency.setValueAtTime(180,t);o.frequency.exponentialRampToValueAtTime(700,t+.9);
+      g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(.12,t+.3);g.gain.linearRampToValueAtTime(0,t+1.1);o.connect(g).connect(sfx);o.start(t);o.stop(t+1.2);
+      [76,81,88].forEach((m,i)=>tone(hz(m),t+.15+i*.12,.1,.04,'pulse',sfx));}
+    else if(name==='card'){[79,84,88,91].forEach((m,i)=>tone(hz(m),t+i*.05,.08,.045,'pulse',sfx));}
+  }
+  function toggle(){on=!on;try{localStorage.setItem('kakitaro-sound',on?'on':'off');}catch(e){}
+    if(on){init();startMusic();}else if(ctx)stopMusic();return on;}
+  return {init,music,jingle,se,toggle,isOn:()=>on};
+})();
+function bgmKey(){
+  if(!S||!$('title').hidden)return 'title';
+  if(S.crow.holder===0)return 'crow';
+  const m=S.month;return m>=3&&m<=5?'spring':m>=6&&m<=8?'summer':m>=9&&m<=11?'autumn':'winter';
+}
+function updSndBtn(){const b=$('sndBtn'),o=Snd.isOn();b.textContent=o?'♪ 音あり':'♪ 音なし';b.setAttribute('aria-pressed',o?'true':'false');}
+
 /* ---------- camera ---------- */
 const NEAR=330;
 const cam={cx:0,cy:0,zw:NEAR},camT={cx:0,cy:0,zw:NEAR};
@@ -705,8 +1027,10 @@ function fullZw(){return Math.max(MAP_W,MAP_H/aspect());}
 function clampT(){const a=aspect(),w=camT.zw,h=w*a;
   camT.cx=w<MAP_W?Math.min(MAP_W-w/2,Math.max(w/2,camT.cx)):MAP_W/2;
   camT.cy=h<MAP_H?Math.min(MAP_H-h/2,Math.max(h/2,camT.cy)):MAP_H/2;}
-function updZoomBtn(){$('zoomBtn').textContent=full?'近くを見る':'全国を見る';}
+function updZoomBtn(){$('zoomBtn').textContent=full?'近くを見る':'全体を見る';}
 function lookAt(id,instant){const n=nodes[id];full=false;camT.zw=NEAR;camT.cx=n.x;camT.cy=n.y;clampT();if(instant)Object.assign(cam,camT);updZoomBtn();}
+function fitBox(x0,y0,x1,y1){full=false;camT.cx=(x0+x1)/2;camT.cy=(y0+y1)/2;camT.zw=Math.min(fullZw(),Math.max(NEAR,x1-x0+140,(y1-y0+140)/aspect()));clampT();updZoomBtn();}
+function fitIds(ids){const xs=ids.map(i=>nodes[i].x),ys=ids.map(i=>nodes[i].y);fitBox(Math.min(...xs),Math.min(...ys),Math.max(...xs),Math.max(...ys));}
 function showAll(){full=true;camT.zw=fullZw();clampT();updZoomBtn();}
 function camTick(){const f=reduced?1:.16;
   cam.cx+=(camT.cx-cam.cx)*f;cam.cy+=(camT.cy-cam.cy)*f;cam.zw+=(camT.zw-cam.zw)*f;
@@ -734,9 +1058,14 @@ $('yN').addEventListener('input',()=>{const v=Math.round(+$('yN').value);
   if(v>=1&&v<=99){years=v;$('ycLabel').classList.add('on');document.querySelectorAll('#yrs button').forEach(x=>x.setAttribute('aria-pressed','false'));}
   else{$('ycLabel').classList.remove('on');}});
 $('yN').addEventListener('change',()=>{let v=Math.round(+$('yN').value);if(!$('yN').value)return;v=Math.min(99,Math.max(1,v||1));$('yN').value=v;$('yN').dispatchEvent(new Event('input'));});
-function showTitle(){$('title').hidden=false;$('contBtn').hidden=!loadSave();}
-$('startBtn').onclick=()=>{newGame(years);$('title').hidden=true;S.log=[];lookAt(START,true);log('東京から出発！ 目的地をめざしましょう');loop();};
-$('contBtn').onclick=()=>{const s=loadSave();if(!s)return;S=s;$('title').hidden=true;lookAt(S.players[S.turn].pos,true);log('つづきから再開しました');loop();};
+function showTitle(){$('title').hidden=false;$('contBtn').hidden=!loadSave();Snd.music('title');}
+$('sndBtn').onclick=()=>{Snd.toggle();updSndBtn();};
+$('tSndBtn').onclick=()=>{Snd.toggle();updSndBtn();$('tSndBtn').textContent=Snd.isOn()?'♪ BGM あり':'♪ BGM なし';};
+$('tSndBtn').textContent=Snd.isOn()?'♪ BGM あり':'♪ BGM なし';
+updSndBtn();
+document.addEventListener('pointerdown',()=>Snd.init(),{once:true});
+$('startBtn').onclick=()=>{Snd.init();newGame(years);$('title').hidden=true;S.log=[];lookAt(START,true);log('東京から出発！ 目的地をめざしましょう');loop();};
+$('contBtn').onclick=()=>{Snd.init();const s=loadSave();if(!s)return;S=s;$('title').hidden=true;lookAt(S.players[S.turn].pos,true);log('つづきから再開しました');loop();};
 drawStatic();
 newGame(3);render();
 initCam();lookAt(START,true);
