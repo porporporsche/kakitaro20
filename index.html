@@ -3,13 +3,13 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="description" content="日本全国63都市と海外11都市をサイコロと飛行機でめぐり、物件の購入・増資・M&AでCPUと総資産を競うオリジナル鉄道すごろく。">
+<meta name="description" content="日本全国146都市と海外38都市をサイコロと飛行機でめぐり、物件の購入・増資・M&AでCPUと総資産を競うオリジナル鉄道すごろく。">
 <meta name="theme-color" content="#16303a">
-<meta property="og:title" content="柿太郎電鉄20！">
+<meta property="og:title" content="栗太郎電鉄20！">
 <meta property="og:description" content="日本全国をサイコロでめぐるオリジナル鉄道すごろく。ブラウザですぐ遊べます。">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='36' r='24' fill='%23e8702a'/%3E%3Cpath d='M20 14h24l-4 8H24z' fill='%233a5a20'/%3E%3C/svg%3E">
 <style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);box-sizing:border-box;height:100%}body{margin:0;font-size:14px}img{max-width:100%}</style>
-<title>柿太郎電鉄20！</title>
+<title>栗太郎電鉄20！</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&family=Zen+Maru+Gothic:wght@500;700&display=swap">
@@ -34,7 +34,7 @@ button:focus-visible{outline:3px solid var(--kaki);outline-offset:2px}
 .topr{display:flex;align-items:center;gap:6px}
 .snd{border:1.5px solid var(--paper);background:transparent;color:var(--paper);border-radius:6px;padding:3px 8px;font-size:11px;white-space:nowrap}
 .snd[aria-pressed="false"]{opacity:.55}
-.logo{font-family:var(--display);font-size:18px;letter-spacing:.02em;color:var(--paper)}
+.logo{white-space:nowrap;font-family:var(--display);font-size:clamp(14px,4.4vw,18px);letter-spacing:.02em;color:var(--paper)}
 .logo b{color:var(--kaki)}
 .cal{font-family:var(--display);font-size:15px;background:var(--paper);color:var(--ink);border-radius:6px;padding:3px 10px;font-variant-numeric:tabular-nums}
 .cal small{font-family:var(--body);font-weight:700;font-size:11px;color:var(--muted);margin-left:4px}
@@ -72,11 +72,13 @@ button:focus-visible{outline:3px solid var(--kaki);outline-offset:2px}
 .waiting{font-size:12px;color:var(--muted);padding:9px 0}
 /* overlay */
 .ov{position:fixed;inset:0;background:rgba(10,24,30,.62);display:flex;align-items:flex-end;justify-content:center;padding:0 max(10px,env(safe-area-inset-right,0px)) calc(10px + env(safe-area-inset-bottom,0px)) max(10px,env(safe-area-inset-left,0px));z-index:10}
-.sheet{background:var(--paper);border-radius:14px;width:100%;max-width:520px;max-height:82%;overflow:auto;padding:16px;box-sizing:border-box;box-shadow:0 10px 30px rgba(0,0,0,.4)}
-.sheet h2{font-family:var(--display);font-weight:400;font-size:22px;margin:0 0 4px;text-wrap:balance}
+.sheetwrap{position:relative;width:100%;max-width:520px;max-height:84%;display:flex;flex-direction:column}
+#ovClose{position:absolute;top:10px;right:10px;z-index:3;width:38px;height:38px;border-radius:50%;border:none;background:var(--shibu);color:var(--paper);font-size:17px;line-height:1;box-shadow:0 2px 6px rgba(0,0,0,.25)}
+.sheet{background:var(--paper);border-radius:14px;width:100%;max-width:520px;max-height:100%;min-height:0;overflow:auto;overscroll-behavior:contain;padding:16px;box-sizing:border-box;box-shadow:0 10px 30px rgba(0,0,0,.4)}
+.sheet h2{padding-right:44px;font-family:var(--display);font-weight:400;font-size:22px;margin:0 0 4px;text-wrap:balance}
 .sheet .lead{color:var(--muted);font-size:13px;margin:0 0 10px;line-height:1.5}
 .sheet .body{font-size:14px;line-height:1.6}
-.sheet .btns{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap}
+.sheet .btns{display:flex;gap:8px;flex-wrap:wrap;position:sticky;bottom:-16px;margin:14px -16px -16px;padding:10px 16px 14px;background:var(--paper);border-top:1px solid #e0cfa6;z-index:2}
 .big{font-family:var(--display);font-size:30px;color:var(--kaki-deep);font-variant-numeric:tabular-nums}
 .prop{display:grid;grid-template-columns:1fr auto;gap:2px 10px;align-items:center;padding:9px 0;border-top:1px dashed #cdb88f}
 .prop .pn{font-weight:700;font-size:14px}
@@ -100,14 +102,60 @@ table.res td:first-child,table.res th:first-child{text-align:left}
 .cardrow .cd{font-size:12px;color:var(--muted)}
 .cardrow button{grid-row:span 2}
 /* title */
-.title{position:fixed;inset:0;background:var(--night);display:flex;align-items:center;justify-content:center;z-index:20;padding:20px max(16px,env(safe-area-inset-right,0px)) 20px max(16px,env(safe-area-inset-left,0px));overflow:auto}
-.tcard{max-width:420px;width:100%;color:var(--paper);display:flex;flex-direction:column;gap:14px}
+.title{position:fixed;inset:0;background:var(--night);display:flex;flex-direction:column;align-items:center;z-index:20;padding:calc(16px + env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) calc(24px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;box-sizing:border-box}
+/* 画面より長いときは上から並べてスクロール（中央寄せで上が見切れないように） */
+.tcard{max-width:420px;width:100%;color:var(--paper);display:flex;flex-direction:column;gap:14px;margin:auto 0;flex:none}
+@media (max-height:760px){.tcard h1{font-size:34px}.tcard{gap:10px}.tcard>p{font-size:13px;line-height:1.6}}
 .tcard h1{font-family:var(--display);font-weight:400;font-size:46px;line-height:1.05;margin:0;letter-spacing:.02em}
 .tcard h1 span{color:var(--kaki);display:block}
 .tcard p{margin:0;line-height:1.7;font-size:14px;color:#d9ccb0}
 .yrs{display:flex;gap:8px}
 .yrs button{flex:1;border:2px solid var(--paper);background:transparent;color:var(--paper);border-radius:8px;padding:10px;font-size:15px}
 .yrs button[aria-pressed="true"]{background:var(--paper);color:var(--ink)}
+.hidbox{margin-top:12px;border:2px solid #b8860b;border-radius:10px;padding:8px 10px;background:linear-gradient(180deg,#fff4d6,#f4e7c8)}
+.hidbox>b{font-family:var(--display);font-weight:400;color:#8a5a00;font-size:15px}
+.hidbox>span{display:block;font-size:11.5px;color:var(--muted);margin:2px 0 4px}
+.hidbox .dom{color:var(--minus);font-weight:700}
+.hidbox.locked{opacity:.8;border-style:dashed}
+.prop.hid .pn{color:#5a3d00}
+.prop .buy.hbuy{background:#b8860b}.prop .buy.hinv{background:#6b8a2e;font-size:12px;line-height:1.25}
+.prop .buy.hbuy:disabled,.prop .buy.hinv:disabled{background:#cdb88f}
+.crowtag.gold{background:#b8860b;color:#fff}
+.vipbox{margin-top:12px;border:2px solid #6a3d9a;border-radius:10px;padding:8px 10px;background:linear-gradient(180deg,#efe4fa,#f4e7c8)}
+.vipbox>b{font-family:var(--display);font-weight:400;color:#4b2a73;font-size:15px}
+.vipbox>span{display:block;font-size:11.5px;color:var(--muted);margin:2px 0 4px}
+.vipbox.locked{opacity:.8;border-style:dashed}
+.prop .buy.vbuy{background:#6a3d9a}.prop .buy.vinv{background:#6b8a2e;font-size:12px;line-height:1.25}
+.prop .buy.vbuy:disabled,.prop .buy.vinv:disabled{background:#cdb88f}
+.tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:6px}
+.tab{border:1.5px solid var(--shibu);background:transparent;color:var(--shibu);border-radius:20px;padding:5px 12px;font-size:12px}
+.tab.on{background:var(--shibu);color:var(--paper)}
+.adv{border-top:1px dashed #cdb88f;padding:10px 0;display:flex;flex-direction:column;gap:6px}
+.ah{display:flex;align-items:center;gap:6px;flex-wrap:wrap;font-size:14px}
+.rank{font-family:var(--display);color:var(--kaki-deep);font-size:16px;min-width:1.4em}
+.kind{font-size:10.5px;border-radius:4px;padding:1px 6px;color:#fff;background:var(--shibu)}
+.k-inv,.k-hinv,.k-vinv{background:#6b8a2e}.k-hbuy{background:#b8860b}.k-vbuy{background:#6a3d9a}.k-dom{background:var(--minus)}
+.anums{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:4px;font-size:10.5px;color:var(--muted);font-variant-numeric:tabular-nums}
+.anums b{display:block;font-size:12.5px;color:var(--ink)}
+.afoot{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:12px;color:var(--muted)}
+.afoot .btn{flex:none;padding:7px 12px;font-size:12.5px}
+.exbox{margin-top:12px;border:2px solid #1f6f78;border-radius:10px;padding:8px 10px;background:linear-gradient(180deg,#dcf1f0,#f4e7c8)}
+.exbox>b{font-family:var(--display);font-weight:400;color:#0f4c52;font-size:15px}
+.exbox>span{display:block;font-size:11.5px;color:var(--muted);margin:2px 0 4px}.exbox .dom{color:var(--minus);font-weight:700}
+.exbox.locked{opacity:.8;border-style:dashed}
+.prop .buy.ebuy{background:#1f6f78}.prop .buy.einv{background:#6b8a2e;font-size:12px;line-height:1.25}
+.prop .buy.ebuy:disabled,.prop .buy.einv:disabled{background:#cdb88f}
+.k-ebuy{background:#1f6f78}.k-einv{background:#6b8a2e}
+.slots{display:flex;flex-direction:column;gap:6px}
+.slothead{font-size:12px;color:#d9ccb0}
+.slot{display:flex;align-items:center;gap:8px;background:rgba(244,231,200,.1);border:1.5px solid rgba(244,231,200,.35);border-radius:10px;padding:8px 10px;flex-wrap:wrap}
+.slot.empty{border-style:dashed}
+.sinfo{flex:1;min-width:150px;font-size:13px;line-height:1.45;color:var(--paper);font-variant-numeric:tabular-nums}
+.sinfo b{margin-right:8px}.sinfo small{color:#b9ab8c}.sinfo span{display:block;font-size:11px;color:#d9ccb0}
+.sbtns{display:flex;gap:5px}
+.sbtns .btn{padding:8px 10px;font-size:13px;flex:none}
+.sbtns .btn.ghost{background:transparent;border:1.5px solid rgba(244,231,200,.5);color:var(--paper)}
+.sbtns .btn.warn{background:var(--minus);border-color:var(--minus);color:#fff}
 .ycustom{flex:1.2;display:flex;align-items:center;gap:4px;border:2px dashed var(--paper);border-radius:8px;padding:0 10px;font-weight:700;font-size:15px;color:var(--paper);cursor:text}
 .ycustom.on{border-style:solid;background:var(--paper);color:var(--ink)}
 .ycustom input{width:100%;min-width:0;background:transparent;border:none;color:inherit;font:inherit;padding:10px 0;text-align:right;outline:none}
@@ -127,7 +175,7 @@ table.res td:first-child,table.res th:first-child{text-align:left}
 <body>
 <div id="app">
   <div class="top">
-    <div class="logo"><b>柿</b>太郎電鉄<b>20！</b></div>
+    <div class="logo"><b>栗</b>太郎電鉄<b>20！</b></div>
     <div class="topr"><button class="snd" id="sndBtn" aria-pressed="true">♪ 音あり</button><div class="cal" id="cal">1年目 4月</div></div>
   </div>
   <button class="goalbar" id="goalbarBtn" title="タップで目的地を地図に表示"><span>目的地</span><span class="g" id="goal">—</span><span class="r" id="reward"></span></button>
@@ -149,7 +197,7 @@ table.res td:first-child,table.res th:first-child{text-align:left}
     <div class="mapbtns"><button id="zoomBtn">全体を見る</button></div>
   </div>
   <div class="panel">
-    <div class="dice" id="dice">柿</div>
+    <div class="dice" id="dice">栗</div>
     <div class="right">
       <div class="msg" id="msg"></div>
       <div class="actions" id="actions"></div>
@@ -157,12 +205,12 @@ table.res td:first-child,table.res th:first-child{text-align:left}
   </div>
 </div>
 
-<div class="ov" id="ov" hidden><div class="sheet" id="sheet"></div></div>
+<div class="ov" id="ov" hidden><div class="sheetwrap"><button id="ovClose" aria-label="閉じる">✕</button><div class="sheet" id="sheet"></div></div></div>
 
 <div class="title" id="title">
   <div class="tcard">
-    <h1>柿太郎<span>電鉄20！</span></h1>
-    <p>小さな柿農家から、日本一の鉄道会社の社長へ。東京を出発し、北は稚内から南は那覇まで、全国63都市と海外11都市をサイコロと飛行機でめぐって各地の店や柿畑を買い集めましょう。</p>
+    <h1>栗太郎<span>電鉄20！</span></h1>
+    <p>小さな栗農家から、日本一の鉄道会社の社長へ。東京を出発し、北は稚内から南は那覇まで、全国146都市と海外38都市をサイコロと飛行機でめぐって各地の店や柿畑を買い集め、1000億円の大富豪をめざしましょう。</p>
     <div>
       <div style="font-size:12px;margin-bottom:6px;color:#d9ccb0">プレイ年数</div>
       <div class="yrs" id="yrs">
@@ -172,16 +220,22 @@ table.res td:first-child,table.res th:first-child{text-align:left}
         <label class="ycustom" id="ycLabel" for="yN"><input id="yN" type="number" inputmode="numeric" min="1" max="99" placeholder="自由">年</label>
       </div>
     </div>
-    <button class="btn main" id="startBtn" style="padding:14px;font-size:17px">あたらしく始める</button>
-    <button class="btn ghost" id="contBtn" hidden>つづきから</button>
+    <div class="slots" id="slots"></div>
     <button class="snd" id="tSndBtn" style="align-self:center;padding:6px 14px;font-size:13px">♪ BGM あり</button>
     <div class="rules">
       <b>あそびかた</b><br>
-      対戦相手はCPUの<b>栗山社長</b>。最後の決算で総資産（お金＋物件）が多いほうの勝ちです。<br>
+      対戦相手はCPUの<b>山岡社長</b>。最後の決算で総資産（お金＋物件）が多いほうの勝ちです。<br>
       <span class="legend" style="background:#3a7cb6"></span>青マス＝お金が入る　<span class="legend" style="background:#c63f35"></span>赤マス＝出費　<span class="legend" style="background:#d8a420"></span>黄マス＝札がもらえる<br>
       サイコロを振ると、出た目で行けるマスが光ります。<b>どの方向へも、引き返してもOK</b>。行き先をタップして決めましょう。<br>
       地図はドラッグで動かせます。「全体を見る」で日本と世界、目的地の帯をタップすると目的地を表示。白い点線は海をわたる航路・橋・トンネルです。<br>
       <b>✈ 空港</b>のある町からは<b>飛行機</b>で国内・海外の空港へ飛べます（運賃は距離しだい）。地図左上の<b>世界</b>には海外11都市があり、物件は高額・高収益です。<br>
+      <b>総資産1000億円以上</b>になると：各都市の<b>隠し資産</b>（数十億〜数百億円）が買えるようになり、すべて買い占めるとその都市を<b>支配</b>（町全体の収益がベースの7倍、相手は一切購入不可）。札は何枚でも持てて、<b>🛩 プライベートジェット</b>でどこへでも無料で移動、<b>🏦 投資銀行家</b>でどの都市の資産も遠隔で購入・増資できます。<br>
+      支配している都市の収益は町全体で<b>ベースの7倍</b>。支配都市が目的地になってゴールすると<b>賞金1000倍</b>。<br>
+      <b>総資産2兆円以上</b>になると、各都市の<b>VIP資産</b>（500億〜2000億円・収益率30〜50%）も購入できます。<br>
+      <b>総資産50兆円以上</b>になると、各都市の<b>Executive資産</b>（5000億〜25兆円・収益率35〜75%）が買えます。すべて買い占めた都市は収益がさらに<b>10倍</b>。また地図右下の<b>エグゼクティブ環状エリア</b>（山手線などの駅名の40都市・2つの環状線）にジェットで入れます。<br>
+      <b>総資産10京円以上</b>になると、地図のいちばん下にある<b>世界の国々エリア</b>（実在する50か国）にジェットで入れます。各国の通常資産・隠し資産・VIP資産・Executive資産を、これまでと同じルールで購入できます。<br>
+      <b>総資産1京円以上</b>のプレイヤーは、目的地に着いたときの賞金が<b>1000万倍</b>（支配都市ならさらに1000倍）。<br>
+      <b>💡 投資提案</b>で、投資額と増える年収益から有望な購入・増資案件をいつでも確認できます。<br>
       自分の物件のある町に止まると<b>増資</b>できます。1回ごとに収益が70%アップ（最大★3）。<br>
       <b>目的地</b>に一番乗りすると賞金。町では店や畑を買えて、毎年3月の<b>決算</b>で収益が入ります。町の物件をぜんぶ買うと<b>買い占め</b>で収益2倍。<br>
       <b>農園</b>の物件（柿畑など）は10月の<b>収穫</b>でも稼ぎます。<br>
@@ -202,10 +256,10 @@ const pick=a=>a[Math.floor(Math.random()*a.length)];
 /* ---------- map: 日本全国＋海外 ---------- */
 const SC=110,PAD=40,LON0=127.6,LAT0=45.8,CXF=0.81;
 const P=(lat,lon)=>[+(PAD+(lon-LON0)*CXF*SC).toFixed(1),+(PAD+(LAT0-lat)*SC).toFixed(1)];
-const MAP_W=Math.round(PAD*2+(146.2-LON0)*CXF*SC),MAP_H=Math.round(PAD*2+(LAT0-27.8)*SC);
+const MAP_W=Math.round(PAD*2+(146.2-LON0)*CXF*SC),MAP_H=2900;   // 下に「世界の国々エリア」を足したので縦を拡張
 const OKI=[2.2,1.2]; // 沖縄は地図に収まるよう北東へ移して表示
 // 海外は左上の海に「世界（縮めて表示）」として描く
-const WBOX={x:40,y:40,w:840,h:600};
+const WBOX={x:40,y:40,w:950,h:600};
 const WP=(lat,lon)=>{if(lon<-30)lon+=360;return [+(80+(lon+5)*2.6).toFixed(1),+(85+(55-lat)*5.5).toFixed(1)];};
 const CITY=[
 ['稚内',45.42,141.67,'最北の柿茶屋:120:30|宗谷の海産加工場:400:25|北限の柿ハウス:200:40:f'],
@@ -271,6 +325,91 @@ const CITY=[
 ['宮崎',31.91,131.42,'チキン南蛮食堂:200:40|マンゴー農園:800:30:f|日南海岸リゾート:2500:12','r'],
 ['鹿児島',31.60,130.56,'黒豚しゃぶしゃぶ屋:500:30|焼酎の蔵:1000:22|桜島フェリー:1500:15','l'],
 ['那覇',26.21,127.68,'サトウキビ畑:200:40:f|国際通りの土産店:300:35|海辺のリゾートホテル:5000:12'],
+// ↓ 追加都市（セーブデータ互換のため必ず末尾に足す）
+['富良野',43.34,142.38,'ラベンダー畑:400:35:f|メロン農園:600:30:f|丘の上のペンション:1200:18','r'],
+['根室',43.33,145.58,'花咲ガニ問屋:600:28|最東端の灯台茶屋:150:40|サンマ漁船団:1500:18','l'],
+['宮古',39.64,141.95,'遊覧船の会社:500:25|わかめ養殖場:400:32|港の魚市場:900:22','r'],
+['石巻',38.43,141.30,'さば料理屋:300:38|ほや養殖場:400:30|港町のマンガ館売店:200:35','u'],
+['銚子',35.73,140.78,'醤油の蔵:1200:20|灯台の土産店:200:35|ぬれ煎餅屋:150:45','r'],
+['下田',34.68,138.95,'黒船の遊覧船:600:25|金目鯛の料理屋:500:30|海辺の温泉宿:2500:13'],
+['輪島',37.39,136.90,'輪島塗の工房:700:25|朝市の干物屋:200:40|能登の棚田:300:35:f','u'],
+['宇和島',33.22,132.56,'真珠養殖場:1200:20|鯛めし屋:250:40|柑橘の段々畑:400:35:f','l'],
+['指宿',31.25,130.63,'砂むし温泉:1500:18|そら豆畑:300:35:f|黒酢の壺畑:600:28','r'],
+['屋久島',30.35,130.52,'屋久杉ガイド:500:30|森の宿:2000:15|たんかん農園:400:35:f'],
+// ↓ 倍増で追加した都市（末尾に足す）
+['留萌',43.94,141.64,'港の市場:890:22|観光牧場:910:26:f|漁協の加工場:740:27','',''],
+['名寄',44.36,142.46,'美術館:1580:22|ラーメン店:180:39|柿の干し場:470:37:f','',''],
+['紋別',44.36,143.35,'ビジネスホテル:2110:15|温泉旅館:2440:14|そば処:270:35','',''],
+['北見',43.8,143.9,'温泉旅館:3290:14|駅前食堂:140:34|スキー場:2060:11','',''],
+['斜里',43.91,144.67,'栗園:500:40:f|和菓子屋:220:39|美術館:1840:20','',''],
+['中標津',43.55,144.97,'地酒の蔵:850:18|道の駅:340:32|駅前食堂:140:35','',''],
+['苫小牧',42.63,141.6,'精密機械工場:6710:11|商店街:480:27|地ビール醸造所:1270:20','',''],
+['浦河',42.17,142.77,'精密機械工場:5620:10|果樹園:300:36:f|土産物店:300:30','',''],
+['小樽',43.19,141,'城下町の茶屋:310:37|土産物店:330:33|商店街:240:34','',''],
+['岩見沢',43.2,141.76,'温泉旅館:2060:13|スキー場:3000:11|地酒の蔵:1040:18','',''],
+['滝川',43.56,141.9,'スキー場:2000:15|ビジネスホテル:2870:13|道の駅:690:26','',''],
+['江差',41.87,140.13,'駅前食堂:160:39|ビジネスホテル:2190:15|そば処:340:37','',''],
+['長万部',42.51,140.37,'米どころの田んぼ:560:36:f|精密機械工場:3580:10|地酒の蔵:1030:20','',''],
+['倶知安',42.9,140.76,'温泉旅館:1850:14|駅前食堂:290:30|城下町の茶屋:210:28','',''],
+['枝幸',44.94,142.58,'道の駅:680:35|港の市場:770:28|ビジネスホテル:1630:14','',''],
+['むつ',41.29,141.18,'地ビール醸造所:1170:19|港の市場:910:29|道の駅:310:31','',''],
+['能代',40.21,140.03,'城下町の茶屋:340:37|地ビール醸造所:1070:25|港の市場:990:23','',''],
+['一関',38.93,141.13,'ビジネスホテル:1790:15|道の駅:530:32|地ビール醸造所:1130:24','',''],
+['気仙沼',38.9,141.57,'栗園:590:40:f|地ビール醸造所:1380:21|和菓子屋:400:35','',''],
+['角館',39.59,140.56,'温泉旅館:2300:14|港の市場:570:28|地酒の蔵:1170:19','',''],
+['横手',39.31,140.55,'土産物店:170:36|城下町の茶屋:420:34|スキー場:3500:11','',''],
+['米沢',37.92,140.12,'和菓子屋:160:43|観光牧場:850:30:f|ラーメン店:210:40','',''],
+['新庄',38.76,140.3,'城下町の茶屋:270:37|栗園:330:33:f|土産物店:200:39','',''],
+['相馬',37.8,140.92,'地ビール醸造所:1120:19|柿の干し場:500:44:f|観光牧場:700:30:f','',''],
+['日光',36.75,139.6,'果樹園:530:31:f|地ビール醸造所:1320:21|美術館:830:22','',''],
+['つくば',36.08,140.11,'柿の干し場:510:43:f|栗園:420:34:f|果樹園:640:34:f','',''],
+['館山',34.99,139.87,'土産物店:220:36|美術館:1750:19|城下町の茶屋:270:31','',''],
+['軽井沢',36.35,138.6,'地ビール醸造所:1490:22|米どころの田んぼ:420:28:f|精密機械工場:3660:13','',''],
+['飯田',35.51,137.82,'地酒の蔵:680:22|ラーメン店:190:38|商店街:460:39','',''],
+['高山',36.15,137.25,'和菓子屋:190:40|美術館:1560:20|柿の干し場:540:38:f','',''],
+['岐阜',35.42,136.76,'観光牧場:760:27:f|スキー場:2830:13|地酒の蔵:760:21','',''],
+['伊勢',34.49,136.71,'商店街:400:32|米どころの田んぼ:740:36:f|果樹園:430:35:f','',''],
+['長岡',37.45,138.85,'商店街:290:26|道の駅:450:32|和菓子屋:170:41','',''],
+['両津',38.08,138.44,'ラーメン店:340:47|米どころの田んぼ:570:31:f|果樹園:460:35:f','','isl'],
+['七尾',37.04,136.97,'和菓子屋:340:41|柿の干し場:440:35:f|港の市場:550:24','',''],
+['彦根',35.27,136.26,'精密機械工場:3480:13|駅前食堂:120:31|商店街:490:37','',''],
+['舞鶴',35.47,135.33,'観光牧場:1080:24:f|道の駅:520:33|港の市場:960:30','',''],
+['豊岡',35.54,134.82,'港の市場:510:22|道の駅:670:32|栗園:310:42:f','',''],
+['洲本',34.34,134.89,'栗園:680:40:f|精密機械工場:5370:11|美術館:1450:20','','isl'],
+['新宮',33.72,135.99,'スキー場:2820:12|そば処:180:39|商店街:420:39','',''],
+['田辺',33.73,135.38,'観光牧場:890:25:f|道の駅:680:33|そば処:220:40','',''],
+['尾鷲',34.07,136.19,'城下町の茶屋:400:37|美術館:1780:19|ビジネスホテル:1280:18','',''],
+['福山',34.49,133.36,'商店街:560:30|栗園:570:33:f|スキー場:2730:13','',''],
+['岩国',34.17,132.22,'観光牧場:670:23:f|土産物店:160:33|精密機械工場:6220:11','',''],
+['浜田',34.9,132.08,'観光牧場:700:28:f|柿の干し場:550:45:f|土産物店:200:34','',''],
+['津山',35.07,134,'ビジネスホテル:1790:13|果樹園:440:37:f|観光牧場:650:27:f','',''],
+['今治',34.07,133,'精密機械工場:5850:12|漁協の加工場:1080:26|道の駅:540:35','',''],
+['四万十',32.99,132.93,'そば処:190:35|美術館:850:20|漁協の加工場:1300:21','',''],
+['室戸',33.29,134.15,'ラーメン店:210:38|精密機械工場:4510:11|そば処:170:37','',''],
+['唐津',33.45,129.97,'土産物店:370:36|港の市場:480:29|地ビール醸造所:1100:25','',''],
+['五島',32.7,128.84,'果樹園:640:31:f|米どころの田んぼ:790:28:f|観光牧場:950:28:f','','isl'],
+['対馬',34.2,129.29,'スキー場:2910:12|精密機械工場:3950:11|駅前食堂:200:37','','isl'],
+['壱岐',33.75,129.69,'和菓子屋:400:41|商店街:360:36|ラーメン店:300:38','','isl'],
+['日田',33.32,130.94,'柿の干し場:260:43:f|城下町の茶屋:230:33|そば処:190:40','',''],
+['天草',32.46,130.19,'栗園:520:40:f|城下町の茶屋:350:34|道の駅:470:35','',''],
+['水俣',32.21,130.41,'精密機械工場:6960:13|ラーメン店:220:40|温泉旅館:2100:12','',''],
+['日南',31.6,131.38,'ビジネスホテル:2630:18|精密機械工場:6650:12|駅前食堂:210:31','',''],
+['枕崎',31.27,130.3,'柿の干し場:330:43:f|果樹園:600:36:f|栗園:520:32:f','',''],
+['木曽',35.84,137.69,'和菓子屋:380:30|商店街:230:31|美術館:1890:19','',''],
+['大町',36.5,137.85,'美術館:1160:22|駅前食堂:190:30|温泉旅館:1650:15','',''],
+['勝浦',35.15,140.32,'道の駅:460:35|地ビール醸造所:1070:25|城下町の茶屋:390:31','',''],
+['太田',36.29,139.38,'栗園:600:40:f|そば処:230:39|柿の干し場:360:43:f','',''],
+['珠洲',37.44,137.26,'城下町の茶屋:340:37|地酒の蔵:1140:19|米どころの田んぼ:630:33:f','',''],
+['小浜',35.5,135.75,'駅前食堂:170:36|温泉旅館:2160:14|米どころの田んぼ:500:35:f','',''],
+['三次',34.81,132.85,'商店街:410:33|土産物店:320:33|ビジネスホテル:1530:12','',''],
+['竹田',32.97,131.4,'そば処:280:35|観光牧場:600:28:f|道の駅:530:27','',''],
+['佐伯',32.96,131.9,'地酒の蔵:980:25|土産物店:170:32|観光牧場:920:24:f','',''],
+['伊豆',34.97,138.95,'商店街:370:26|道の駅:560:32|果樹園:390:35:f','',''],
+['秩父',35.99,139.09,'地酒の蔵:1100:20|ビジネスホテル:1270:17|道の駅:320:26','',''],
+['沼田',36.65,139.04,'米どころの田んぼ:430:32:f|地ビール醸造所:1170:24|商店街:200:40','',''],
+['遠野',39.33,141.53,'地ビール醸造所:1480:18|地酒の蔵:1080:19|和菓子屋:290:32','',''],
+['八幡平',39.93,140.99,'土産物店:180:36|美術館:1490:19|城下町の茶屋:280:31','',''],
+['村上',38.22,139.48,'駅前食堂:110:42|地酒の蔵:1000:19|和菓子屋:380:32','',''],
 ];
 const WORLD=[
 ['ロンドン',51.51,-0.13,'紅茶と柿のティールーム:800:25|劇場街の劇場:4000:12|二階建てバス会社:6000:10','r'],
@@ -284,6 +423,35 @@ const WORLD=[
 ['ホノルル',21.31,-157.86,'サーフショップ:300:40|パイナップル農園:1500:25:f|ビーチリゾート:6000:12'],
 ['ロサンゼルス',34.05,-118.24,'タコス屋台:250:45|西海岸の柿農園:1500:30:f|映画スタジオ:9000:10','u'],
 ['ニューヨーク',40.71,-74.01,'ベーグル店:300:45|ミュージカル劇場:5000:12|摩天楼オフィス:10000:10','l'],
+// ↓ 追加都市（末尾に足す）
+['ローマ',41.90,12.50,'ジェラート店:300:45|遺跡めぐりツアー:1500:20|オリーブ農園:1200:28:f','r'],
+['カイロ',30.04,31.24,'ラクダ観光:600:30|スパイス市場:800:28|ナイル川クルーズ:4000:13','r'],
+['ムンバイ',19.08,72.88,'カレー食堂:200:50|紅茶の農園:1500:28:f|映画撮影所:6000:11'],
+['ケープタウン',-33.92,18.42,'ペンギン観察ツアー:600:30|ワイン農園:2000:25:f|岬のホテル:5000:12'],
+['バンクーバー',49.28,-123.12,'サーモン料理店:500:35|メープル農園:1500:26:f|水上飛行機会社:3000:15','l'],
+['メキシコシティ',19.43,-99.13,'タコス本舗:200:50|アボカド農園:1200:30:f|古代遺跡ホテル:4000:13'],
+['サンパウロ',-23.55,-46.63,'シュラスコ店:500:38|コーヒー農園:1800:28:f|大都市のオフィス:8000:11','l'],
+['オークランド',-36.85,174.76,'羊のチーズ工房:600:30|キウイ農園:1200:30:f|ヨット会社:3000:15','r'],
+// ↓ 倍増で追加した都市（末尾に足す）
+['マドリード',40.42,-3.7,'ショッピングモール:4350:12|老舗レストラン:970:35|港湾倉庫:5960:13'],
+['イスタンブール',41.01,28.98,'ワイナリー:1630:22:f|老舗レストラン:750:30|高級ホテル:7350:10'],
+['ナイロビ',-1.29,36.82,'中央市場:830:24|港湾倉庫:3520:12|フルーツ農園:1990:25:f'],
+['ラゴス',6.52,3.38,'港湾倉庫:3950:12|美術館前カフェ:750:36|金融ビル:7700:12'],
+['デリー',28.61,77.21,'屋台街:450:46|ワイナリー:1890:23:f|美術館前カフェ:590:36'],
+['マニラ',14.6,120.98,'老舗レストラン:840:25|ワイナリー:1920:26:f|金融ビル:9120:12'],
+['ジャカルタ',-6.21,106.85,'ワイナリー:2290:30:f|港湾倉庫:3320:13|美術館前カフェ:590:33'],
+['ハノイ',21.03,105.85,'美術館前カフェ:430:34|金融ビル:8170:11|ショッピングモール:5510:11'],
+['パース',-31.95,115.86,'ワイナリー:2190:27:f|フルーツ農園:1190:30:f|金融ビル:8880:10'],
+['スバ',-18.14,178.44,'金融ビル:7360:12|美術館前カフェ:600:32|ショッピングモール:5920:13'],
+['マイアミ',25.76,-80.19,'フルーツ農園:1680:28:f|屋台街:300:46|高級ホテル:6790:12'],
+['リマ',-12.05,-77.04,'ワイナリー:1650:26:f|金融ビル:7520:11|フルーツ農園:1410:29:f'],
+['ブエノスアイレス',-34.6,-58.38,'ショッピングモール:6620:11|ワイナリー:2310:24:f|美術館前カフェ:790:30'],
+['テヘラン',35.69,51.39,'ショッピングモール:7900:11|ワイナリー:2500:23:f|中央市場:890:23'],
+['ダッカ',23.81,90.41,'港湾倉庫:4770:12|美術館前カフェ:580:33|老舗レストラン:1290:30'],
+['ウランバートル',47.89,106.91,'美術館前カフェ:590:39|老舗レストラン:960:34|屋台街:250:49'],
+['ダーウィン',-12.46,130.84,'中央市場:1940:23|金融ビル:8050:12|ショッピングモール:4660:11'],
+['ケアンズ',-16.92,145.77,'ショッピングモール:7460:11|金融ビル:9930:12|ワイナリー:1840:29:f'],
+['パペーテ',-17.53,-149.57,'美術館前カフェ:620:33|ショッピングモール:4080:13|中央市場:1190:25'],
 ];
 const AIR_J=['札幌','釧路','仙台','東京','名古屋','大阪','広島','福岡','鹿児島','那覇'];
 // "-" は線路、"~" は海をわたる航路・橋・トンネル（海外は航路）
@@ -293,22 +461,89 @@ const LINES=['稚内-旭川','旭川-網走','網走-釧路','旭川-札幌','�
 '富山-金沢','金沢-福井','福井-京都','静岡-浜松','浜松-名古屋','名古屋-京都','名古屋-津','津-奈良','京都-大阪','京都-奈良','大阪-奈良','奈良-和歌山','大阪-和歌山','大阪-神戸','神戸-姫路','姫路-岡山','姫路-鳥取','鳥取-松江','鳥取-京都','神戸~徳島','岡山~高松','岡山-広島','岡山-松江','松江-山口','広島-山口','広島~松山',
 '高松-徳島','高松-松山','高松-高知','徳島-高知','松山-高知','松山~大分',
 '山口~北九州','北九州-福岡','北九州-大分','福岡-佐賀','佐賀-長崎','佐賀-佐世保','佐世保-長崎','福岡-熊本','熊本-大分','熊本-鹿児島','大分-延岡','延岡-宮崎','宮崎-鹿児島','鹿児島~那覇',
-'ロンドン~ドバイ','ドバイ~バンコク','バンコク~シンガポール','シンガポール~シドニー','バンコク~台北','台北~上海','上海~ソウル','シドニー~ホノルル','ホノルル~ロサンゼルス','ロサンゼルス~ニューヨーク','ニューヨーク~ロンドン'];
+'ロンドン~ドバイ','ドバイ~バンコク','バンコク~シンガポール','シンガポール~シドニー','バンコク~台北','台北~上海','上海~ソウル','シドニー~ホノルル','ホノルル~ロサンゼルス','ロサンゼルス~ニューヨーク','ニューヨーク~ロンドン',
+// ↓ 追加路線（末尾に足す）
+'旭川-富良野','富良野-帯広','釧路-根室','盛岡-宮古','宮古-八戸','仙台-石巻','石巻-宮古','千葉-銚子','銚子-水戸','横浜-下田','金沢-輪島','松山-宇和島','宇和島-高知','鹿児島-指宿','指宿~屋久島','屋久島~那覇',
+'ロンドン~ローマ','ローマ~カイロ','カイロ~ドバイ','ドバイ~ムンバイ','ムンバイ~バンコク','カイロ~ケープタウン','ケープタウン~ムンバイ','バンクーバー~ロサンゼルス','バンクーバー~ニューヨーク','ロサンゼルス~メキシコシティ','メキシコシティ~サンパウロ','サンパウロ~ニューヨーク','シドニー~オークランド','オークランド~ホノルル',
+// ↓ エグゼクティブ環状エリア（環状線＋中央を横切る線）
+'神田-秋葉原','秋葉原-上野','上野-日暮里','日暮里-駒込','駒込-巣鴨','巣鴨-池袋','池袋-目白','目白-高田馬場','高田馬場-新宿','新宿-代々木','代々木-原宿','原宿-渋谷','渋谷-恵比寿','恵比寿-目黒','目黒-五反田','五反田-品川','品川-浜松町','浜松町-新橋','新橋-有楽町','有楽町-神田','新宿-神田',
+// ↓ 世界の国々エリア
+'カナダ-アメリカ','アメリカ-メキシコ','メキシコ~ペルー','ペルー-ブラジル','ペルー-アルゼンチン','ブラジル-アルゼンチン','ブラジル~ナイジェリア','アメリカ~イギリス','カナダ~イギリス','イギリス~フランス','フランス-スペイン','フランス-ドイツ','フランス-イタリア','ドイツ-ロシア','イタリア~トルコ','スペイン~ナイジェリア','トルコ~エジプト','トルコ-サウジアラビア','エジプト~サウジアラビア','エジプト-ケニア','ナイジェリア-ケニア','ケニア-南アフリカ','ナイジェリア-南アフリカ','サウジアラビア~インド','ロシア-中国','インド-中国','インド-タイ','中国~韓国','中国-タイ','タイ~インドネシア','インドネシア~オーストラリア','オーストラリア~ニュージーランド','南アフリカ~オーストラリア',
+// ↓ 倍増で追加した路線（末尾に足す）
+'東京駅-日本橋','日本橋-御茶ノ水','御茶ノ水-御徒町','御徒町-鶯谷','鶯谷-西日暮里','西日暮里-田端','田端-大塚','大塚-飯田橋','飯田橋-新大久保','新大久保-四ツ谷','四ツ谷-表参道','表参道-六本木','六本木-赤坂','赤坂-大崎','大崎-高輪ゲートウェイ','高輪ゲートウェイ-田町','田町-麻布十番','麻布十番-豊洲','豊洲-銀座','銀座-東京駅','田町-池袋','留萌-滝川','留萌-旭川','名寄-枝幸','名寄-旭川','紋別-北見','紋別-名寄','北見-網走','北見-斜里','斜里-網走','斜里-中標津','中標津-根室','中標津-釧路','苫小牧-札幌','苫小牧-岩見沢','浦河-帯広','浦河-苫小牧','小樽-札幌','小樽-倶知安','岩見沢-札幌','岩見沢-滝川','滝川-旭川','滝川-富良野','江差-函館','江差-長万部','長万部-倶知安','長万部-室蘭','倶知安-札幌','倶知安-室蘭','枝幸-紋別','枝幸-稚内','むつ-青森','むつ-函館','能代-秋田','能代-角館','一関-気仙沼','一関-遠野','気仙沼-遠野','気仙沼-石巻','角館-横手','角館-秋田','横手-秋田','横手-新庄','米沢-福島','米沢-山形','新庄-酒田','新庄-山形','相馬-福島','相馬-仙台','日光-宇都宮','日光-沼田','つくば-水戸','つくば-千葉','館山-勝浦','館山-横浜','軽井沢-高崎','軽井沢-長野','飯田-木曽','飯田-甲府','高山-木曽','高山-富山','岐阜-名古屋','岐阜-彦根','伊勢-津','伊勢-尾鷲','長岡-新潟','長岡-上越','両津~新潟','両津~長岡','七尾-輪島','七尾-富山','彦根-京都','彦根-小浜','舞鶴-小浜','舞鶴-豊岡','豊岡-鳥取','豊岡-姫路','洲本~和歌山','洲本~神戸','新宮-尾鷲','新宮-田辺','田辺-和歌山','田辺-尾鷲','尾鷲-奈良','尾鷲-津','福山-岡山','福山-今治','岩国-広島','岩国-松山','浜田-広島','浜田-三次','津山-岡山','津山-鳥取','今治-松山','今治-広島','四万十-宇和島','四万十-高知','室戸-高知','室戸-徳島','唐津-佐賀','唐津-佐世保','五島~長崎','五島~佐世保','対馬~壱岐','対馬~佐世保','壱岐~唐津','壱岐~佐世保','日田-竹田','日田-福岡','天草-水俣','天草-長崎','水俣-鹿児島','水俣-熊本','日南-宮崎','日南-鹿児島','枕崎-指宿','枕崎-鹿児島','木曽-松本','木曽-甲府','大町-松本','大町-長野','勝浦-千葉','勝浦-横浜','太田-高崎','太田-秩父','珠洲-輪島','珠洲-七尾','小浜-京都','小浜-福井','三次-福山','三次-広島','竹田-大分','竹田-佐伯','佐伯-大分','佐伯-延岡','伊豆-下田','伊豆-静岡','秩父-高崎','秩父-甲府','沼田-高崎','沼田-太田','遠野-宮古','遠野-盛岡','八幡平-盛岡','八幡平-角館','村上-新潟','村上-米沢','マドリード~ローマ','マドリード~ロンドン','イスタンブール~ローマ','イスタンブール~カイロ','ナイロビ~ラゴス','ナイロビ~ムンバイ','ラゴス~カイロ','ラゴス~ドバイ','デリー~ダッカ','デリー~ムンバイ','マニラ~台北','マニラ~ハノイ','ジャカルタ~シンガポール','ジャカルタ~ダーウィン','ハノイ~台北','ハノイ~バンコク','パース~シドニー','パース~ケアンズ','スバ~パペーテ','スバ~ケアンズ','マイアミ~メキシコシティ','マイアミ~ニューヨーク','リマ~サンパウロ','リマ~ブエノスアイレス','ブエノスアイレス~サンパウロ','ブエノスアイレス~パペーテ','テヘラン~ドバイ','テヘラン~カイロ','ダッカ~ハノイ','ダッカ~ムンバイ','ウランバートル~ソウル','ウランバートル~上海','ダーウィン~ケアンズ','ダーウィン~シンガポール','ケアンズ~シドニー','ケアンズ~オークランド','パペーテ~オークランド','パペーテ~シドニー','コロンビア~ペルー','コロンビア~キューバ','キューバ~メキシコ','キューバ~アメリカ','アイスランド~イギリス','アイスランド~ノルウェー','ノルウェー~ドイツ','ノルウェー~フィンランド','フィンランド~ウクライナ','フィンランド~ドイツ','ウクライナ~トルコ','ウクライナ~ドイツ','イラン~サウジアラビア','イラン~パキスタン','パキスタン~インド','パキスタン~カザフスタン','カザフスタン~イラン','カザフスタン~ロシア','モンゴル~中国','モンゴル~ロシア','フィリピン~インドネシア','フィリピン~タイ','マレーシア~タイ','マレーシア~インドネシア','バングラデシュ~インド','バングラデシュ~タイ','エチオピア~ケニア','エチオピア~スーダン','アルジェリア~チュニジア','アルジェリア~スペイン','マダガスカル~ケニア','マダガスカル~南アフリカ','セネガル~ナイジェリア','セネガル~アルジェリア','パプアニューギニア~オーストラリア','パプアニューギニア~インドネシア','フィジー~ニュージーランド','フィジー~パプアニューギニア','ボリビア~ペルー','ボリビア~ブラジル','ウルグアイ~アルゼンチン','ウルグアイ~ボリビア','スリランカ~インド','スリランカ~バングラデシュ','チュニジア~イタリア','チュニジア~フランス','スーダン~エジプト','スーダン~サウジアラビア','コンゴ~ケニア','コンゴ~ナイジェリア'];
 const nodes={},adj={},byName={};
 const parseProps=ps=>ps.split('|').map(s=>{const a=s.split(':');return {name:a[0],price:+a[1],yld:+a[2],farm:a[3]==='f'};});
-CITY.forEach((c,i)=>{const id='c'+i;let [nm,lat,lon,ps,lab]=c;const geo=[lat,lon];if(nm==='那覇'){lat+=OKI[0];lon+=OKI[1];}
+CITY.forEach((c,i)=>{const id='c'+i;let [nm,lat,lon,ps,lab]=c;const geo=[lat,lon];if(nm==='那覇'||c[5]==='oki'){lat+=OKI[0];lon+=OKI[1];}
   const [x,y]=P(lat,lon);
   nodes[id]={id,type:'town',x,y,name:nm,lab:lab||'',geo,world:false,airport:AIR_J.includes(nm),props:parseProps(ps)};byName[nm]=id;adj[id]=[];});
 const WDISP={'ソウル':[40.6,127.5],'台北':[22.3,121.5]}; // 近い3都市は少し離して表示
 WORLD.forEach((c,i)=>{const id='w'+i;const [nm,lat,lon,ps,lab]=c;const [x,y]=WP(...(WDISP[nm]||[lat,lon]));
   nodes[id]={id,type:'town',x,y,name:nm,lab:lab||'',geo:[lat,lon],world:true,airport:true,props:parseProps(ps)};byName[nm]=id;adj[id]=[];});
+const hsh0=str=>{let h=2166136261;for(const c of str){h^=c.charCodeAt(0);h=Math.imul(h,16777619);}return h>>>0;};
+// ↓ エグゼクティブ環状エリア（総資産50兆円以上専用・山手線の駅名）※セーブ互換のためIDは x0〜 で末尾に追加
+const AREA_ST=['神田','秋葉原','上野','日暮里','駒込','巣鴨','池袋','目白','高田馬場','新宿','代々木','原宿','渋谷','恵比寿','目黒','五反田','品川','浜松町','新橋','有楽町'];
+const ABOX={x:1262,y:1318,w:440,h:700},ACX=ABOX.x+ABOX.w/2,ACY=ABOX.y+ABOX.h/2+18,ARX=165,ARY=280;
+const AREA_T=['老舗百貨店','駅ビル','高層オフィス','ラグジュアリーホテル','劇場','美術館','タワーマンション','高級レストラン','電気街ビル','ファッションビル','屋上庭園','会員制クラブ'];
+AREA_ST.forEach((nm,i)=>{const id='x'+i,th=(-15+i*18)*Math.PI/180,x=+(ACX+ARX*Math.cos(th)).toFixed(1),y=+(ACY-ARY*Math.sin(th)).toFixed(1);
+  const c=Math.cos(th),s=Math.sin(th),lab=c>.35?'r':c<-.35?'l':s>0?'u':'';
+  const h=hsh0('area'+nm),cnt=3+(h%2),used=new Set(),props=[];
+  for(let j=0;j<cnt;j++){let q=(h>>>(j*4))%AREA_T.length;while(used.has(q))q=(q+1)%AREA_T.length;used.add(q);
+    const r=((h>>>(j*6+1))%1000)/1000;props.push({name:nm+'の'+AREA_T[q],price:Math.round((10000+r*490000)/1000)*1000,yld:15+((h>>>(j*5+2))%26),farm:false});}
+  nodes[id]={id,type:'town',x,y,name:nm,lab,geo:[35.68,139.77],world:false,area:true,airport:false,props};byName[nm]=id;adj[id]=[];});
+// ↓ 世界の国々エリア（総資産10京円以上専用）※セーブ互換のためIDは n0〜 で末尾に追加
+const NBOX={x:40,y:2090,w:1660,h:770};
+const NP=(lat,lon)=>[+(100+(lon+130)*4.97).toFixed(1),+(2170+(70-lat)*5.6).toFixed(1)];
+const NATIONS=[['アメリカ',39,-98],['カナダ',57,-100,'u'],['メキシコ',23,-102],['ペルー',-10,-76,'l'],['ブラジル',-10,-52,'r'],['アルゼンチン',-35,-65],
+ ['イギリス',56,-6,'l'],['フランス',46,0,'l'],['スペイン',39,-8,'l'],['ドイツ',52,14,'r'],['イタリア',41,16,'r'],['ロシア',60,90,'u'],
+ ['トルコ',39,35,'r'],['エジプト',26.5,30,'l'],['サウジアラビア',24,45,'r'],['ナイジェリア',9,8,'l'],['ケニア',0,38,'r'],['南アフリカ',-29,25],
+ ['インド',22,79,'l'],['中国',35,104,'u'],['韓国',36.5,128,'r'],['タイ',15,101,'l'],['インドネシア',-2,118,'r'],['オーストラリア',-25,134],['ニュージーランド',-41,174,'l'],
+ // ↓ 倍増で追加した国（末尾に足す）
+ ['コロンビア',4,-73],
+ ['キューバ',22,-79],
+ ['アイスランド',65,-18],
+ ['ノルウェー',64,10],
+ ['フィンランド',64,26],
+ ['ウクライナ',49,32],
+ ['イラン',32,53],
+ ['パキスタン',30,70],
+ ['カザフスタン',48,67],
+ ['モンゴル',47,104],
+ ['フィリピン',12,122],
+ ['マレーシア',4,102],
+ ['バングラデシュ',24,90],
+ ['エチオピア',9,40],
+ ['アルジェリア',28,3],
+ ['マダガスカル',-19,47],
+ ['セネガル',14,-14],
+ ['パプアニューギニア',-6,145],
+ ['フィジー',-18,178],
+ ['ボリビア',-17,-65],
+ ['ウルグアイ',-33,-56],
+ ['スリランカ',8,81],
+ ['チュニジア',34,9],
+ ['スーダン',15,30],
+ ['コンゴ',-2,23]];
+const NAT_T=['高速鉄道網','国際空港','港湾公社','電力網','通信網','首都再開発','資源開発権','農業公社','自動車メーカー','観光リゾート','金融街','宇宙開発機構'];
+NATIONS.forEach(([nm,lat,lon,lab],i)=>{const id='n'+i,[x,y]=NP(lat,lon);
+  const h=hsh0('nation'+nm),cnt=3+(h%2),used=new Set(),props=[];
+  for(let j=0;j<cnt;j++){let q=(h>>>(j*4))%NAT_T.length;while(used.has(q))q=(q+1)%NAT_T.length;used.add(q);
+    const r=((h>>>(j*6+1))%1000)/1000;props.push({name:nm+'の'+NAT_T[q],price:Math.round((100000000+r*4900000000)/1000000)*1000000,yld:15+((h>>>(j*5+2))%26),farm:NAT_T[q]==='農業公社'});}   // 1兆〜50兆円
+  nodes[id]={id,type:'town',x,y,name:nm,lab:lab||'',geo:[lat,lon],world:false,area:false,nation:true,airport:false,props};byName[nm]=id;adj[id]=[];});
+// ↓ エグゼクティブ第2環状（倍増分・IDは x20〜）
+const ABOX2={x:1372,y:556,w:330,h:740},AC2={x:1537,y:942},AR2={x:112,y:300};
+const AREA2=[["東京駅", 1645.2, 1019.6, "r"], ["日本橋", 1648.8, 926.3, "r"], ["御茶ノ水", 1641.6, 834.5, "r"], ["御徒町", 1624, 753.2, "r"], ["鶯谷", 1598, 690.4, "r"], ["西日暮里", 1566, 652.2, "u"], ["田端", 1531.1, 642.4, "u"], ["大塚", 1496.9, 661.9, "l"], ["飯田橋", 1466.5, 708.9, "l"], ["新大久保", 1443.1, 778.6, "l"], ["四ツ谷", 1428.8, 864.4, "l"], ["表参道", 1425.2, 957.7, "l"], ["六本木", 1432.4, 1049.5, "l"], ["赤坂", 1450, 1130.8, "l"], ["大崎", 1476, 1193.6, "l"], ["高輪ゲートウェイ", 1508, 1231.8, ""], ["田町", 1542.9, 1241.6, ""], ["麻布十番", 1577.1, 1222.1, "r"], ["豊洲", 1607.5, 1175.1, "r"], ["銀座", 1630.9, 1105.4, "r"]];
+AREA2.forEach(([nm,x,y,lab],i)=>{const id='x'+(20+i);
+  const h=hsh0('area'+nm),cnt=3+(h%2),used=new Set(),props=[];
+  for(let j=0;j<cnt;j++){let q=(h>>>(j*4))%AREA_T.length;while(used.has(q))q=(q+1)%AREA_T.length;used.add(q);
+    const r=((h>>>(j*6+1))%1000)/1000;props.push({name:nm+'の'+AREA_T[q],price:Math.round((10000+r*490000)/1000)*1000,yld:15+((h>>>(j*5+2))%26),farm:false});}
+  nodes[id]={id,type:'town',x,y,name:nm,lab,geo:[35.68,139.77],world:false,area:true,airport:false,props};byName[nm]=id;adj[id]=[];});
 const PATTERN=['plus','plus','minus','card','plus','minus','plus','card','plus','minus','plus','plus','card','minus'];
 const RAILS=[];let k=0;
 LINES.forEach(e=>{const sea=e.includes('~');const [a,b]=e.split(/[-~]/).map(n=>byName[n]);
   if(!a||!b)throw new Error('line '+e);
   const A=nodes[a],B=nodes[b],len=Math.hypot(B.x-A.x,B.y-A.y),n=Math.max(1,Math.min(5,Math.round(len/42)));
   const ch=[a];
-  for(let j=1;j<=n;j++){const id='s'+k;nodes[id]={id,type:PATTERN[k%PATTERN.length],x:A.x+(B.x-A.x)*j/(n+1),y:A.y+(B.y-A.y)*j/(n+1),sea,world:A.world};adj[id]=[];ch.push(id);k++;}
+  for(let j=1;j<=n;j++){const id='s'+k;nodes[id]={id,type:PATTERN[k%PATTERN.length],x:A.x+(B.x-A.x)*j/(n+1),y:A.y+(B.y-A.y)*j/(n+1),sea,world:A.world,area:!!A.area,nation:!!A.nation};adj[id]=[];ch.push(id);k++;}
   ch.push(b);
   for(let j=0;j<ch.length-1;j++){adj[ch[j]].push(ch[j+1]);adj[ch[j+1]].push(ch[j]);}
   RAILS.push({a,b,sea});});
@@ -316,9 +551,9 @@ const IDS=Object.keys(nodes);
 const DIST={};
 IDS.forEach(s=>{const d={[s]:0},q=[s];while(q.length){const c=q.shift();adj[c].forEach(n=>{if(d[n]==null){d[n]=d[c]+1;q.push(n);}});}DIST[s]=d;});
 const allTownIds=IDS.filter(i=>nodes[i].type==='town');
-const townIds=allTownIds.filter(i=>!nodes[i].world);      // 国内の町（目的地はここから）
-const plainIds=IDS.filter(i=>nodes[i].type!=='town'&&!nodes[i].world);
-const airportIds=allTownIds.filter(i=>nodes[i].airport);
+const townIds=allTownIds.filter(i=>!nodes[i].world&&!nodes[i].area&&!nodes[i].nation);      // 国内の町（目的地はここから）
+const plainIds=IDS.filter(i=>nodes[i].type!=='town'&&!nodes[i].world&&!nodes[i].area&&!nodes[i].nation);
+const airportIds=allTownIds.filter(i=>nodes[i].airport&&!nodes[i].area&&!nodes[i].nation);
 const START=byName['東京'];
 function geoKm(a,b){const R=6371,r=Math.PI/180,[la1,lo1]=nodes[a].geo,[la2,lo2]=nodes[b].geo;
   const h=Math.sin((la2-la1)*r/2)**2+Math.cos(la1*r)*Math.cos(la2*r)*Math.sin((lo2-lo1)*r/2)**2;return 2*R*Math.asin(Math.sqrt(h));}
@@ -337,16 +572,20 @@ const CARD_POOL=['hayagake','hayagake','hayagake','tokkyu','tokkyu','toriyoke','
 
 /* ---------- state ---------- */
 let S=null;
-const SAVE_KEY='kakitaro-save-v3-world';
-function save(){try{localStorage.setItem(SAVE_KEY,JSON.stringify(S));}catch(e){}}
-function loadSave(){try{const s=localStorage.getItem(SAVE_KEY);return s?JSON.parse(s):null;}catch(e){return null;}}
-function clearSave(){try{localStorage.removeItem(SAVE_KEY);}catch(e){}}
+const SLOTS=5,OLD_KEY='kakitaro-save-v3-world',slotKey=n=>'kakitaro-slot-'+n;
+let slot=1;
+function readSlot(n){try{const s=localStorage.getItem(slotKey(n));return s?JSON.parse(s):null;}catch(e){return null;}}
+function save(){try{S.savedAt=Date.now();localStorage.setItem(slotKey(slot),JSON.stringify(S));}catch(e){}}
+function clearSave(n=slot){try{localStorage.removeItem(slotKey(n));}catch(e){}}
+// 以前の1枠セーブを空いているスロットへ移す
+(function migrate(){try{const old=localStorage.getItem(OLD_KEY);if(!old)return;
+  for(let n=1;n<=SLOTS;n++)if(!localStorage.getItem(slotKey(n))){localStorage.setItem(slotKey(n),old);localStorage.removeItem(OLD_KEY);return;}}catch(e){}})();
 
 function newGame(years){
   S={years,year:1,month:4,turn:0,over:false,
-    players:[{name:'あなた',short:'柿',money:1000,pos:START,prev:null,cards:['hayagake','hayagake'],skip:0,cpu:false,color:'#e8702a'},
-             {name:'栗山社長',short:'栗',money:1000,pos:START,prev:null,cards:['hayagake','hayagake'],skip:0,cpu:true,color:'#3b4f86'}],
-    owners:{},levels:{},goal:null,goalReward:0,crow:{at:null,holder:null,spawned:false},log:[]};
+    players:[{name:'あなた',short:'栗',money:1000,pos:START,prev:null,cards:['hayagake','hayagake'],skip:0,cpu:false,color:'#e8702a'},
+             {name:'山岡社長',short:'山',money:1000,pos:START,prev:null,cards:['hayagake','hayagake'],skip:0,cpu:true,color:'#3b4f86'}],
+    owners:{},levels:{},hOwners:{},hLevels:{},vOwners:{},vLevels:{},eOwners:{},eLevels:{},goal:null,goalReward:0,crow:{at:null,holder:null,spawned:false},log:[]};
   setGoal(START);
 }
 const yf=()=>1+0.25*(S.year-1);
@@ -360,9 +599,9 @@ const key=(t,i)=>t+':'+i;
 function ownerOf(t,i){const o=S.owners[key(t,i)];return o==null?null:o;}
 function monoOf(t){const ps=nodes[t].props;const o=ownerOf(t,0);if(o==null)return null;for(let i=1;i<ps.length;i++)if(ownerOf(t,i)!==o)return null;return o;}
 function holdings(pi){const out=[];allTownIds.forEach(t=>nodes[t].props.forEach((p,i)=>{if(ownerOf(t,i)===pi)out.push({t,i,p});}));return out;}
-const assets=pi=>S.players[pi].money+holdings(pi).reduce((s,h)=>s+valOf(h.t,h.i),0);
+const assets=pi=>S.players[pi].money+holdings(pi).reduce((s,h)=>s+valOf(h.t,h.i),0)+hHoldings(pi).reduce((s,h)=>s+hValOf(h.t,h.i),0)+vHoldings(pi).reduce((s,h)=>s+vValOf(h.t,h.i),0)+(typeof eHoldings==='function'?eHoldings(pi).reduce((s,h)=>s+eValOf(h.t,h.i),0):0);
 
-function fmt(m){const neg=m<0;m=Math.abs(Math.round(m));let s;if(m>=10000){const o=Math.floor(m/10000),r=m%10000;s=o+'億'+(r?r+'万':'')+'円';}else s=m+'万円';return (neg?'−':'')+s;}
+function fmt(m){const neg=m<0;m=Math.abs(Math.round(m));let s;if(m>=1e16){const g=Math.floor(m/1e16),q=Math.floor(m%1e16/1e12);s=g+'垓'+(q?q+'京':'')+'円';}else if(m>=1000000000000){const q=Math.floor(m/1000000000000),c=Math.floor(m%1000000000000/100000000);s=q+'京'+(c?c+'兆':'')+'円';}else if(m>=100000000){const c=Math.floor(m/100000000),o=Math.floor(m%100000000/10000);s=c+'兆'+(o?o+'億':'')+'円';}else if(m>=10000){const o=Math.floor(m/10000),r=m%10000;s=o+'億'+(r?r+'万':'')+'円';}else s=m+'万円';return (neg?'−':'')+s;}
 
 /* ---------- rendering ---------- */
 function el(tag,attrs,parent,text){const e=document.createElementNS(NS,tag);for(const a in attrs)e.setAttribute(a,attrs[a]);if(text!=null)e.textContent=text;if(parent)parent.appendChild(e);return e;}
@@ -373,6 +612,10 @@ shikoku:[34.35,134.05,34.25,134.6,34.07,134.62,33.7,134.6,33.25,134.18,33.55,133
 kyushu:[33.95,130.95,33.6,131.7,33.25,131.6,32.9,132.0,32.4,131.65,31.9,131.45,31.4,131.35,31.0,131.05,31.35,130.75,31.0,130.66,31.5,130.55,31.25,130.3,31.6,130.15,32.1,130.2,32.5,130.6,32.8,130.55,33.1,130.4,32.75,130.25,32.6,129.85,32.75,129.8,33.1,129.65,33.3,129.85,33.5,130.0,33.6,130.4,33.9,130.6],
 sado:[38.33,138.5,38.05,138.22,37.8,138.25,37.85,138.5,38.1,138.55],
 awaji:[34.6,135.0,34.3,134.65,34.2,134.85,34.45,135.0],
+tsushima:[34.68,129.47,34.4,129.3,34.1,129.22,34.2,129.38,34.45,129.42],
+iki:[33.85,129.7,33.75,129.78,33.72,129.66,33.8,129.62],
+goto:[32.85,128.75,32.7,128.95,32.6,128.85,32.68,128.65],
+yakushima:[30.45,130.42,30.4,130.66,30.25,130.62,30.28,130.4],
 okinawa:[26.87,128.27,26.6,128.05,26.4,127.75,26.1,127.65,26.08,127.75,26.4,127.95,26.7,128.3],
 };
 function smooth(pts){const n=pts.length;let d=`M${pts[0][0]},${pts[0][1]}`;
@@ -399,6 +642,19 @@ function drawStatic(){
   allTownIds.filter(i=>nodes[i].world).forEach(i=>{const n=nodes[i];
     el('ellipse',{cx:n.x+3,cy:n.y+4,rx:30,ry:21,fill:'#16303a',opacity:.6},g);
     el('ellipse',{cx:n.x,cy:n.y,rx:30,ry:21,fill:'#f4e7c8',stroke:'#c9b07e','stroke-width':2},g);});
+  // エグゼクティブ環状エリア
+  el('rect',{x:NBOX.x,y:NBOX.y,width:NBOX.w,height:NBOX.h,rx:20,fill:'#1d2c3c',stroke:'#e8c45a','stroke-width':3,'stroke-dasharray':'12 7'},g);
+  el('text',{x:NBOX.x+22,y:NBOX.y+36,'font-size':20,'font-weight':700,fill:'#e8c45a','font-family':'Zen Maru Gothic','letter-spacing':2},g,'世界の国々エリア');
+  el('text',{x:NBOX.x+22,y:NBOX.y+60,'font-size':12,fill:'#b9cde0','font-family':'Zen Maru Gothic'},g,'総資産10京円以上のプレイヤーだけがジェットで入れます。各国の資産をこれまでと同じルールで購入できます');
+  allTownIds.filter(i=>nodes[i].nation).forEach(i=>{const n=nodes[i];el('ellipse',{cx:n.x+3,cy:n.y+4,rx:28,ry:19,fill:'#0f1a26',opacity:.6},g);el('ellipse',{cx:n.x,cy:n.y,rx:28,ry:19,fill:'#efe2bf',stroke:'#e8c45a','stroke-width':2},g);});
+  el('rect',{x:ABOX2.x,y:ABOX2.y,width:ABOX2.w,height:ABOX2.h,rx:18,fill:'#2c2547',stroke:'#d8a420','stroke-width':2.5,'stroke-dasharray':'10 6'},g);
+  el('text',{x:ABOX2.x+16,y:ABOX2.y+28,'font-size':14,'font-weight':700,fill:'#d8a420','font-family':'Zen Maru Gothic'},g,'エグゼクティブ第2環状');
+  el('ellipse',{cx:AC2.x,cy:AC2.y,rx:AR2.x+24,ry:AR2.y+24,fill:'#3a3160',opacity:.7},g);el('ellipse',{cx:AC2.x,cy:AC2.y,rx:AR2.x-26,ry:AR2.y-26,fill:'#2c2547'},g);
+  el('rect',{x:ABOX.x,y:ABOX.y,width:ABOX.w,height:ABOX.h,rx:18,fill:'#2c2547',stroke:'#d8a420','stroke-width':2.5,'stroke-dasharray':'10 6'},g);
+  el('text',{x:ABOX.x+18,y:ABOX.y+30,'font-size':15,'font-weight':700,fill:'#d8a420','font-family':'Zen Maru Gothic'},g,'エグゼクティブ環状エリア');
+  el('text',{x:ABOX.x+18,y:ABOX.y+50,'font-size':11,fill:'#c9b8e8','font-family':'Zen Maru Gothic'},g,'総資産50兆円以上のプレイヤーだけがジェットで入れます');
+  el('ellipse',{cx:ACX,cy:ACY,rx:ARX+26,ry:ARY+26,fill:'#3a3160',opacity:.7},g);
+  el('ellipse',{cx:ACX,cy:ACY,rx:ARX-30,ry:ARY-30,fill:'#2c2547'},g);
   RAILS.forEach(r=>{const A=nodes[r.a],B=nodes[r.b];
     if(r.sea){el('line',{x1:A.x,y1:A.y,x2:B.x,y2:B.y,stroke:'#f4e7c8','stroke-width':2.4,'stroke-dasharray':'1 6','stroke-linecap':'round'},g);}
     else{el('line',{x1:A.x,y1:A.y,x2:B.x,y2:B.y,stroke:'#5c3a22','stroke-width':5,'stroke-linecap':'round'},g);
@@ -434,8 +690,10 @@ let highlights=[];
 function render(){
   const d=$('dyn');d.innerHTML='';
   // ownership tint on towns
-  allTownIds.forEach(t=>{const r=$('town-'+t),m=$('tmark-'+t),mo=monoOf(t);
-    if(mo!=null){r.setAttribute('fill',S.players[mo].color);m.setAttribute('fill','#fff');m.textContent='占';}
+  allTownIds.forEach(t=>{const r=$('town-'+t),m=$('tmark-'+t),mo=monoOf(t),dm=domOf(t);
+    r.setAttribute('stroke',dm!=null?'#d8a420':'#5c3a22');r.setAttribute('stroke-width',dm!=null?4:2.2);
+    if(dm!=null){r.setAttribute('fill',S.players[dm].color);m.setAttribute('fill','#fff');m.textContent='覇';}
+    else if(mo!=null){r.setAttribute('fill',S.players[mo].color);m.setAttribute('fill','#fff');m.textContent='占';}
     else{r.setAttribute('fill','#fffaf0');m.setAttribute('fill','#5c3a22');m.textContent='駅';}
     const owned=[0,1].map(pi=>nodes[t].props.filter((p,i)=>ownerOf(t,i)===pi).length);
     owned.forEach((c,pi)=>{for(let j=0;j<c;j++)el('circle',{cx:nodes[t].x-9+j*4.5,cy:nodes[t].y-11-pi*4.5,r:1.8,fill:S.players[pi].color},d);});
@@ -465,13 +723,13 @@ function render(){
     const go=()=>{if(!suppress)h.fn();};hit.addEventListener('click',go);c.addEventListener('click',go);
   });
   // header
-  $('cal').innerHTML=`${S.year}年目 ${S.month}月<small>/ 全${S.years}年</small>`;
+  $('cal').innerHTML=`${S.year}年目 ${S.month}月<small>/ 全${S.years}年・S${slot}</small>`;
   $('goal').textContent=nodes[S.goal].name;
   const me=S.players[0];
   const gd=DIST[me.pos][S.goal];
-  $('reward').textContent=`賞金 ${fmt(S.goalReward)}・${gd==null?'いまは海外':`あと${gd}マス`}`;
+  $('reward').textContent=`賞金 ${fmt(S.goalReward)}・${gd==null?(nodes[me.pos].nation?'いまは国々エリア':nodes[me.pos].area?'いまは環状エリア':'いまは海外'):`あと${gd}マス`}`;
   Snd.music(bgmKey());
-  $('players').innerHTML=S.players.map((p,i)=>`<div class="pl ${S.turn===i&&!S.over?'active':''}"><div class="nm"><span class="dot" style="background:${p.color}"></span>${p.name}${S.crow.holder===i?'<span class="crowtag">カラス</span>':''}${p.skip?'<span class="crowtag">休み</span>':''}</div><div class="money ${p.money<0?'neg':''}">${fmt(p.money)}</div><div class="sub"><span>物件 ${holdings(i).length}</span><span>札 ${p.cards.length}</span><span>総資産 ${fmt(assets(i))}</span></div></div>`).join('');
+  $('players').innerHTML=S.players.map((p,i)=>`<div class="pl ${S.turn===i&&!S.over?'active':''}"><div class="nm"><span class="dot" style="background:${p.color}"></span>${p.name}${keiClass(i)?'<span class="crowtag gold">10京クラブ</span>':execClass(i)?'<span class="crowtag gold">50兆クラブ</span>':vipClass(i)?'<span class="crowtag gold">2兆クラブ</span>':tycoon(i)?'<span class="crowtag gold">1000億クラブ</span>':''}${S.crow.holder===i?'<span class="crowtag">カラス</span>':''}${p.skip?'<span class="crowtag">休み</span>':''}</div><div class="money ${p.money<0?'neg':''}">${fmt(p.money)}</div><div class="sub"><span>物件 ${holdings(i).length+hHoldings(i).length+vHoldings(i).length+eHoldings(i).length}</span><span>札 ${p.cards.length}</span><span>総資産 ${fmt(assets(i))}</span></div></div>`).join('');
   const lg=S.log.slice(-2);
   $('msg').innerHTML=lg.map((l,j)=>j<lg.length-1?`<div class="old">${l}</div>`:`<div>${l}</div>`).join('');
 }
@@ -500,7 +758,7 @@ const MAXLV=3;
 const lvOf=(t,i)=>(S.levels&&S.levels[key(t,i)])||0;
 const investCost=(t,i)=>Math.round(nodes[t].props[i].price*.5/10)*10;          // 増資1回 = 物件価格の半額
 const valOf=(t,i)=>Math.round(nodes[t].props[i].price*(1+.5*lvOf(t,i)));         // 資産価値 = 価格＋増資額
-const incomeOf=(t,i,pi)=>Math.round(nodes[t].props[i].price*nodes[t].props[i].yld/100*(1+.7*lvOf(t,i))*(monoOf(t)===pi?2:1)); // 増資1回で収益+70%
+const incomeOf=(t,i,pi)=>Math.round(nodes[t].props[i].price*nodes[t].props[i].yld/100*(1+.7*lvOf(t,i))*(domOf(t)===pi?DOM_MULT:(monoOf(t)===pi?2:1))*exMult(t,pi)); // 増資1回で収益+70%。買い占めで2倍、都市支配なら町全体でベースの7倍
 const stars=lv=>lv?`<span class="lv">${'★'.repeat(lv)}${'☆'.repeat(MAXLV-lv)}</span>`:'';
 const farmTag='<span class="tag" style="background:#6b8a2e">農園</span>';
 function propRows(t,pi,canBuy){
@@ -533,24 +791,15 @@ function doInvest(pi,t,i){
   log(`${p.name}が${nodes[t].props[i].name}に${fmt(c)}を増資（★${lvOf(t,i)}）`);
 }
 function showTownInfo(t){
-  modal(nodes[t].name,'この町の物件（止まると買えます）',propRows(t,0,false),[{label:'閉じる',v:1,cls:'ghost'}]);
+  modal(nodes[t].name,'この町の物件（止まると買えます）',propRows(t,0,false)+(tycoon(0)?hiddenRows(t,0,false):''),[{label:'閉じる',v:1,cls:'ghost'}]);
 }
 async function humanShop(pi,t){
   const p=S.players[pi];
   return new Promise(res=>{
     const draw=()=>{
       const sh=$('sheet');
-      sh.innerHTML=`<h2>${nodes[t].name}${nodes[t].world?'':'駅'}</h2><p class="lead">所持金 ${fmt(p.money)}。決算（3月）で 物件価格×収益率 が入ります。自分の物件は<b>増資</b>（価格の半額）するたびに収益が70%ずつ上がります（最大★3）。相手の物件は<b>M&A</b>で買収できます。</p><div class="body">${propRows(t,pi,true)}</div><div class="btns"><button class="btn main" id="shopDone">買い物をおわる</button></div>`;
-      sh.querySelectorAll('.buy.ma').forEach(b=>b.onclick=async()=>{const i=+b.dataset.i;if(p.money<maPrice(t,i))return;
-        const r=await doMA(pi,t,i);Snd.se('buy');
-        toast(r.brokeMono?`${r.pr.name}を買収！ 相手の買い占めを崩した`:(monoOf(t)===pi?`買収で${nodes[t].name}を買い占め！`:`${r.pr.name}を買収した`),1500);
-        draw();});
-      sh.querySelectorAll('.buy.inv').forEach(b=>b.onclick=()=>{const i=+b.dataset.i;if(p.money<investCost(t,i)||lvOf(t,i)>=MAXLV)return;
-        doInvest(pi,t,i);Snd.se('card');toast(`増資！ 年収益 ${fmt(incomeOf(t,i,pi))} に`,1300);draw();});
-      sh.querySelectorAll('.buy:not(.ma):not(.inv)').forEach(b=>b.onclick=()=>{const i=+b.dataset.i,pr=nodes[t].props[i];if(p.money<pr.price)return;
-        p.money-=pr.price;S.owners[key(t,i)]=pi;Snd.se('buy');log(`${pr.name}を${fmt(pr.price)}で買った`);
-        if(monoOf(t)===pi)toast(`${nodes[t].name}を買い占め！収益2倍`,1400);
-        draw();});
+      sh.innerHTML=`<h2>${nodes[t].name}${nodes[t].world?'':'駅'}</h2><p class="lead">所持金 ${fmt(p.money)}。決算（3月）で 物件価格×収益率 が入ります。自分の物件は<b>増資</b>（価格の半額）するたびに収益が70%ずつ上がります（最大★3）。相手の物件は<b>M&A</b>で買収できます。</p><div class="body">${shopBody(t,pi)}</div><div class="btns"><button class="btn main" id="shopDone">買い物をおわる</button></div>`;
+      bindShop(sh,pi,t,draw);
       $('shopDone').onclick=()=>{$('ov').hidden=true;res();};
     };
     $('ov').hidden=false;draw();
@@ -559,9 +808,262 @@ async function humanShop(pi,t){
 function showHoldings(){
   const hs=holdings(0);
   const body=hs.length?hs.map(h=>`<div class="prop"><div class="pn">${h.p.name}${h.p.farm?farmTag:''}${stars(lvOf(h.t,h.i))}</div><span class="pm">${nodes[h.t].name}</span><div class="pm">価値 ${fmt(valOf(h.t,h.i))}・年収益 ${fmt(incomeOf(h.t,h.i,0))}${monoOf(h.t)===0?'・買い占め':''}</div></div>`).join(''):'<p class="lead">まだ物件がありません。町の駅に止まると買えます。</p>';
-  return modal('あなたの物件',`年間収益の見込み ${fmt(yearIncome(0))}。増資はその町に止まったときにできます。`,body,[{label:'閉じる',v:1,cls:'ghost'}]);
+  const hb=hHoldings(0).map(h=>`<div class="prop hid"><div class="pn">${h.p.name}${stars(hLvOf(h.t,h.i))}</div><span class="pm">${domOf(h.t)===0?'支配中':'隠し資産'}</span><div class="pm">価値 ${fmt(hValOf(h.t,h.i))}・年収益 ${fmt(hIncomeOf(h.t,h.i,0))}</div></div>`).join('');
+  return modal('あなたの物件',`年間収益の見込み ${fmt(yearIncome(0))}。増資はその町に止まったときにできます。`,body+(hb?`<div class="hidbox"><b>隠し資産</b>${hb}</div>`:'')+(eHoldings(0).length?`<div class="exbox"><b>Executive資産</b>${eHoldings(0).map(h=>`<div class="prop ex"><div class="pn">${h.p.name}${stars(eLvOf(h.t,h.i))}</div><span class="pm">${nodes[h.t].name}</span><div class="pm">価値 ${fmt(eValOf(h.t,h.i))}・年収益 ${fmt(eIncomeOf(h.t,h.i,0))}</div></div>`).join('')}</div>`:'')+(vHoldings(0).length?`<div class="vipbox"><b>VIP資産</b>${vHoldings(0).map(h=>`<div class="prop vip"><div class="pn">${h.p.name}${stars(vLvOf(h.t,h.i))}</div><span class="pm">${nodes[h.t].name}</span><div class="pm">価値 ${fmt(vValOf(h.t,h.i))}・年収益 ${fmt(vIncomeOf(h.t,h.i,0))}</div></div>`).join('')}</div>`:''),[{label:'閉じる',v:1,cls:'ghost'}]);
 }
-function yearIncome(pi,farmOnly){return holdings(pi).filter(h=>!farmOnly||h.p.farm).reduce((s,h)=>s+incomeOf(h.t,h.i,pi),0);}
+function yearIncome(pi,farmOnly){return holdings(pi).filter(h=>!farmOnly||h.p.farm).reduce((s,h)=>s+incomeOf(h.t,h.i,pi),0)+(farmOnly?0:hHoldings(pi).reduce((s,h)=>s+hIncomeOf(h.t,h.i,pi),0)+vHoldings(pi).reduce((s,h)=>s+vIncomeOf(h.t,h.i,pi),0)+eHoldings(pi).reduce((s,h)=>s+eIncomeOf(h.t,h.i,pi),0));}
+
+/* ---------- 隠し資産（総資産1000億円以上のプレイヤー専用） ---------- */
+const TYCOON=10000000;                    // 1000億円（単位：万円）
+const HID_J=['再開発タワー','ベイエリア統合リゾート','新幹線新駅ビル','スマートシティ','国際会議場','巨大物流センター','柿の一大加工プラント','データセンター','空中庭園ホテル','次世代エネルギー基地','地下街ネットワーク','高原リゾート開発'];
+const HID_W=['金融タワー','国際空港ターミナル','超高級リゾート島','港湾コンテナ基地','半導体メガ工場','世界本社ビル','ロケット発射場','巨大テーマパーク'];
+const hsh=str=>{let h=2166136261;for(const c of str){h^=c.charCodeAt(0);h=Math.imul(h,16777619);}return h>>>0;};
+allTownIds.forEach(t=>{const n=nodes[t],tpl=n.world?HID_W:HID_J,base=n.props.reduce((s,p)=>s+p.price,0);
+  const h=hsh(n.name),cnt=base>=9000?3:2+(h%2),used=new Set();n.hidden=[];
+  for(let j=0;j<cnt;j++){let q=(h>>>(j*5))%tpl.length;while(used.has(q))q=(q+1)%tpl.length;used.add(q);
+    const r=((h>>>(j*7+3))%1000)/1000;
+    const price=Math.round((200000+r*800000)*(n.nation?20000:n.area?40:(1+base/4000)*(n.world?1.5:1))/10000)*10000;   // 20億〜数百億円
+    n.hidden.push({name:n.name+tpl[q],price,yld:6+((h>>>(j*3+1))%7)});}
+});
+const hk=(t,i)=>t+':'+i;
+function hInit(){if(!S.hOwners)S.hOwners={};if(!S.hLevels)S.hLevels={};}
+const hOwnerOf=(t,i)=>{const o=S.hOwners&&S.hOwners[hk(t,i)];return o==null?null:o;};
+const hLvOf=(t,i)=>(S.hLevels&&S.hLevels[hk(t,i)])||0;
+const hInvestCost=(t,i)=>Math.round(nodes[t].hidden[i].price*.5/10000)*10000;
+const hValOf=(t,i)=>Math.round(nodes[t].hidden[i].price*(1+.5*hLvOf(t,i)));
+// 隠し資産の買い占め（＝その都市を支配）：都市全体の収益がベースの7倍、他プレイヤーはその都市で一切購入不可
+const DOM_MULT=7;
+function domOf(t){const hs=nodes[t].hidden;const o=hOwnerOf(t,0);if(o==null)return null;for(let i=1;i<hs.length;i++)if(hOwnerOf(t,i)!==o)return null;return o;}
+const domMult=(t,pi)=>domOf(t)===pi?DOM_MULT:1;
+const lockedFor=(t,pi)=>{const d=domOf(t);return (d!=null&&d!==pi)||(nodes[t].area&&!execClass(pi))||(nodes[t].nation&&!keiClass(pi));};
+const hIncomeOf=(t,i,pi)=>Math.round(nodes[t].hidden[i].price*nodes[t].hidden[i].yld/100*(1+.7*hLvOf(t,i))*domMult(t,pi)*exMult(t,pi));
+function hHoldings(pi){const out=[];allTownIds.forEach(t=>nodes[t].hidden.forEach((p,i)=>{if(hOwnerOf(t,i)===pi)out.push({t,i,p});}));return out;}
+const tycoon=pi=>assets(pi)>=TYCOON;
+function hiddenRows(t,pi,canAct){
+  const n=nodes[t],d=domOf(t);
+  if(!tycoon(pi)&&canAct)return `<div class="hidbox locked"><b>隠し資産 ${n.hidden.length}件</b><span>総資産1000億円以上で解放されます</span></div>`;
+  let h=`<div class="hidbox"><b>隠し資産</b>${d!=null?`<span class="dom">${S.players[d].name}がこの都市を支配中（収益${DOM_MULT}倍・他プレイヤー購入不可）</span>`:'<span>すべて買い占めると都市を支配でき、町全体の収益がベースの7倍に</span>'}`;
+  n.hidden.forEach((p,i)=>{const o=hOwnerOf(t,i),lv=hLvOf(t,i);let right,info=`${fmt(p.price)}・収益率 ${p.yld}%`;
+    if(o!=null)info+=`・年収益 ${fmt(hIncomeOf(t,i,o))}`;
+    if(o===pi&&canAct)right=lv>=MAXLV?`<span class="owned" style="background:${S.players[o].color}">増資済み</span>`:`<button class="buy hinv" data-i="${i}" ${S.players[pi].money<hInvestCost(t,i)?'disabled':''}>増資<br>${fmt(hInvestCost(t,i))}</button>`;
+    else if(o!=null)right=`<span class="owned" style="background:${S.players[o].color}">${S.players[o].short}所有</span>`;
+    else if(canAct&&!lockedFor(t,pi))right=`<button class="buy hbuy" data-i="${i}" ${S.players[pi].money<p.price?'disabled':''}>買う</button>`;
+    else right=`<span class="owned" style="background:#cdb88f">空き</span>`;
+    h+=`<div class="prop hid"><div class="pn">${p.name}${stars(lv)}</div>${right}<div class="pm">${info}</div></div>`;});
+  return h+'</div>';
+}
+function hBuy(pi,t,i){const p=S.players[pi],pr=nodes[t].hidden[i];hInit();if(p.money<pr.price||hOwnerOf(t,i)!=null||lockedFor(t,pi))return false;
+  p.money-=pr.price;S.hOwners[hk(t,i)]=pi;log(`${p.name}が隠し資産「${pr.name}」を${fmt(pr.price)}で取得`);return true;}
+function hInvest(pi,t,i){const p=S.players[pi],c=hInvestCost(t,i);hInit();if(p.money<c||hLvOf(t,i)>=MAXLV)return false;
+  p.money-=c;S.hLevels[hk(t,i)]=hLvOf(t,i)+1;log(`${p.name}が「${nodes[t].hidden[i].name}」に${fmt(c)}を増資`);return true;}
+// 町の物件・隠し資産の売買シート（駅での買い物と、投資銀行家の遠隔取引で共用）
+function bindShop(sh,pi,t,draw){
+  const p=S.players[pi];
+  sh.querySelectorAll('.buy.ma').forEach(b=>b.onclick=async()=>{const i=+b.dataset.i;if(p.money<maPrice(t,i)||lockedFor(t,pi))return;
+    const r=await doMA(pi,t,i);Snd.se('buy');
+    toast(r.brokeMono?`${r.pr.name}を買収！ 相手の買い占めを崩した`:(monoOf(t)===pi?`買収で${nodes[t].name}を買い占め！`:`${r.pr.name}を買収した`),1500);draw();});
+  sh.querySelectorAll('.buy.inv').forEach(b=>b.onclick=()=>{const i=+b.dataset.i;if(p.money<investCost(t,i)||lvOf(t,i)>=MAXLV)return;
+    doInvest(pi,t,i);Snd.se('card');toast(`増資！ 年収益 ${fmt(incomeOf(t,i,pi))} に`,1300);draw();});
+  sh.querySelectorAll('.buy:not(.ma):not(.inv):not(.hbuy):not(.hinv):not(.vbuy):not(.vinv):not(.ebuy):not(.einv)').forEach(b=>b.onclick=()=>{const i=+b.dataset.i,pr=nodes[t].props[i];if(p.money<pr.price||lockedFor(t,pi))return;
+    p.money-=pr.price;S.owners[key(t,i)]=pi;Snd.se('buy');log(`${pr.name}を${fmt(pr.price)}で買った`);
+    if(monoOf(t)===pi)toast(`${nodes[t].name}を買い占め！収益2倍`,1400);draw();});
+  sh.querySelectorAll('.buy.hbuy').forEach(b=>b.onclick=()=>{const i=+b.dataset.i;if(!hBuy(pi,t,i))return;Snd.se('buy');
+    if(domOf(t)===pi){Snd.jingle('goal');toast(`${nodes[t].name}を支配！ 都市全体の収益が${DOM_MULT}倍`,1800);}else toast('隠し資産を取得',1100);draw();});
+  sh.querySelectorAll('.buy.hinv').forEach(b=>b.onclick=()=>{const i=+b.dataset.i;if(!hInvest(pi,t,i))return;Snd.se('card');
+    toast(`増資！ 年収益 ${fmt(hIncomeOf(t,i,pi))} に`,1300);draw();});
+  bindVip(sh,pi,t,draw);bindExec(sh,pi,t,draw);
+}
+function bindVip(sh,pi,t,draw){
+  sh.querySelectorAll('.buy.vbuy').forEach(b=>b.onclick=()=>{if(!vBuy(pi,t,+b.dataset.i))return;Snd.se('buy');Snd.jingle('settle');toast('VIP資産を取得',1200);draw();});
+  sh.querySelectorAll('.buy.vinv').forEach(b=>b.onclick=()=>{const i=+b.dataset.i;if(!vInvest(pi,t,i))return;Snd.se('card');toast(`増資！ 年収益 ${fmt(vIncomeOf(t,i,pi))} に`,1300);draw();});
+}
+function shopBody(t,pi){const lk=lockedFor(t,pi);
+  return (lk?`<div class="mono" style="background:var(--minus)">${nodes[t].nation&&!keiClass(pi)?'総資産10京円以上のプレイヤーだけが取引できるエリアです':nodes[t].area&&!execClass(pi)?'総資産50兆円以上のプレイヤーだけが取引できるエリアです':S.players[domOf(t)].name+'がこの都市を支配しているため、購入できません'}</div>`:'')+propRows(t,pi,!lk)+hiddenRows(t,pi,true)+vipRows(t,pi,true)+execRows(t,pi,true);}
+// プライベートジェット：どこからでも好きな町へ無料で
+function jetSheet(pi){
+  const p=S.players[pi];
+  return new Promise(res=>{const sh=$('sheet');
+    const row=a=>{const d=DIST[a][S.goal];return `<div class="cardrow"><div class="cn">${nodes[a].name}${domOf(a)!=null?' <span class="tag" style="background:#b8860b">支配</span>':''}</div><button class="btn main" data-a="${a}">飛ぶ</button><div class="cd">${a===S.goal?'<b>目的地！</b>':d!=null?`目的地まで${d}マス`:'海外'}</div></div>`;};
+    const list=allTownIds.filter(a=>a!==p.pos&&(!nodes[a].area||execClass(pi))&&(!nodes[a].nation||keiClass(pi)));
+    sh.innerHTML=`<h2>プライベートジェット</h2><p class="lead">総資産1000億円以上の特典です。どこからでも、好きな町へ無料で飛べます（サイコロの代わり）。</p>
+      <div class="body"><h3 class="subh">目的地</h3>${list.includes(S.goal)?row(S.goal):''}<h3 class="subh">国内</h3>${list.filter(a=>!nodes[a].world&&!nodes[a].area&&!nodes[a].nation&&a!==S.goal).map(row).join('')}<h3 class="subh">海外</h3>${list.filter(a=>nodes[a].world).map(row).join('')}${list.some(a=>nodes[a].area)?`<h3 class="subh">エグゼクティブ環状エリア</h3>${list.filter(a=>nodes[a].area).map(row).join('')}`:''}${list.some(a=>nodes[a].nation)?`<h3 class="subh">世界の国々エリア</h3>${list.filter(a=>nodes[a].nation).map(row).join('')}`:''}</div>
+      <div class="btns"><button class="btn ghost" id="jetBack">やめる</button></div>`;
+    sh.querySelectorAll('[data-a]').forEach(b=>b.onclick=()=>{$('ov').hidden=true;res(b.dataset.a);});
+    $('jetBack').onclick=()=>{$('ov').hidden=true;res(null);};$('ov').hidden=false;sh.scrollTop=0;});
+}
+// お抱えの投資銀行家：好きな都市の好きな資産を購入・増資
+function bankerSheet(pi){
+  const p=S.players[pi];
+  return new Promise(res=>{const sh=$('sheet');
+    const list=()=>{
+      const row=t=>{const n=nodes[t],free=n.props.filter((x,i)=>ownerOf(t,i)==null).length+n.hidden.filter((x,i)=>hOwnerOf(t,i)==null).length,d=domOf(t);
+        return `<div class="cardrow"><div class="cn">${n.name}${d!=null?` <span class="tag" style="background:${S.players[d].color}">${S.players[d].short}が支配</span>`:''}</div><button class="btn ${lockedFor(t,pi)?'ghost':'main'}" data-t="${t}">開く</button><div class="cd">空き ${free}件・隠し資産 ${n.hidden.length}件</div></div>`;};
+      sh.innerHTML=`<h2>投資銀行家</h2><p class="lead">お抱えの投資銀行家が、どの都市の資産でも代わりに購入・増資します。ターンは消費しません。所持金 ${fmt(p.money)}</p>
+        <div class="body"><h3 class="subh">国内</h3>${townIds.map(row).join('')}<h3 class="subh">海外</h3>${allTownIds.filter(t=>nodes[t].world).map(row).join('')}${execClass(pi)?`<h3 class="subh">エグゼクティブ環状エリア</h3>${allTownIds.filter(t=>nodes[t].area).map(row).join('')}`:''}${keiClass(pi)?`<h3 class="subh">世界の国々エリア</h3>${allTownIds.filter(t=>nodes[t].nation).map(row).join('')}`:''}</div>
+        <div class="btns"><button class="btn ghost" id="bkBack">おわる</button></div>`;
+      sh.querySelectorAll('[data-t]').forEach(b=>b.onclick=()=>city(b.dataset.t));
+      $('bkBack').onclick=()=>{$('ov').hidden=true;res();};};
+    const city=t=>{const draw=()=>{
+        sh.innerHTML=`<h2>${nodes[t].name}</h2><p class="lead">投資銀行家経由の取引です。所持金 ${fmt(p.money)}</p><div class="body">${shopBody(t,pi)}</div><div class="btns"><button class="btn main" id="bkCity">都市の一覧へ</button></div>`;
+        bindShop(sh,pi,t,draw);$('bkCity').onclick=()=>{list();sh.scrollTop=0;};render();};draw();sh.scrollTop=0;};
+    $('ov').hidden=false;list();sh.scrollTop=0;});
+}
+// CPUの億万長者モード：投資銀行家で隠し資産を集め、都市の支配をねらう
+async function cpuTycoon(pi){
+  const p=S.players[pi];hInit();vInit();let n=0,inv=0;
+  const reserve=Math.max(5000,assets(pi)*.03);
+  // 投資提案と同じ計算で、支配達成→利回りの高い順に実行（1ターン最大4件）
+  for(let k=0;k<4;k++){
+    const list=proposals(pi).filter(o=>o.kind!=='buy'&&o.kind!=='inv'&&p.money-o.cost>=reserve).sort((a,b)=>(b.ex-a.ex)||(b.dom-a.dom)||(b.roi-a.roi));
+    const o=list[0];if(!o)break;
+    if(!execProposal(pi,o))break;
+    if(/inv$/.test(o.kind))inv++;else n++;
+    if(o.kind==='hbuy'&&domOf(o.t)===pi){render();await modal('都市が支配されました',`${p.name}が${nodes[o.t].name}の隠し資産をすべて手に入れました。`,`<p>${nodes[o.t].name}の収益は${p.name}だけが町全体でベースの${DOM_MULT}倍になり、ほかのプレイヤーはこの都市で何も買えなくなります。</p>`);}
+  }
+  if(n||inv){render();await toast(`${p.name}の投資銀行家が動いた（取得${n}件・増資${inv}回）`,1500);}
+}
+
+/* ---------- VIP資産（総資産2兆円以上のプレイヤー専用） ---------- */
+const VIPLINE=200000000;                  // 2兆円（単位：万円）
+const VIP_J=['国家戦略特区','リニア中央ターミナル','海上空港都市','柿の総合商社本社','次世代港湾都市','超電導エネルギー網'];
+const VIP_W=['国際金融センター','大陸横断鉄道会社','国際宇宙港','世界貿易センター','王室御用達リゾート','海底トンネル公社'];
+allTownIds.forEach(t=>{const n=nodes[t],tpl=n.world?VIP_W:VIP_J,h=hsh('vip'+n.name),base=n.props.reduce((s,p)=>s+p.price,0);
+  const cnt=base>=9000?2:1;n.vip=[];
+  for(let j=0;j<cnt;j++){const q=((h>>>(j*4))+j*3)%tpl.length,r=((h>>>(j*6+2))%1000)/1000;
+    n.vip.push({name:n.name+tpl[q],price:Math.round((5000000+r*15000000)*(n.nation?10000:n.area?3:1)/100000)*100000,yld:30+((h>>>(j*5+1))%21)});}   // 500億〜2000億円・収益率30〜50%
+});
+function vInit(){if(!S.vOwners)S.vOwners={};if(!S.vLevels)S.vLevels={};}
+const vOwnerOf=(t,i)=>{const o=S.vOwners&&S.vOwners[hk(t,i)];return o==null?null:o;};
+const vLvOf=(t,i)=>(S.vLevels&&S.vLevels[hk(t,i)])||0;
+const vInvestCost=(t,i)=>Math.round(nodes[t].vip[i].price*.5/100000)*100000;
+const vValOf=(t,i)=>Math.round(nodes[t].vip[i].price*(1+.5*vLvOf(t,i)));
+const vIncomeOf=(t,i,pi)=>Math.round(nodes[t].vip[i].price*nodes[t].vip[i].yld/100*(1+.7*vLvOf(t,i))*domMult(t,pi)*exMult(t,pi));
+function vHoldings(pi){const out=[];allTownIds.forEach(t=>nodes[t].vip.forEach((p,i)=>{if(vOwnerOf(t,i)===pi)out.push({t,i,p});}));return out;}
+const vipClass=pi=>assets(pi)>=VIPLINE;
+function vipRows(t,pi,canAct){
+  const n=nodes[t];
+  if(!vipClass(pi)){return tycoon(pi)&&canAct?`<div class="vipbox locked"><b>VIP資産 ${n.vip.length}件</b><span>総資産2兆円以上で解放されます</span></div>`:'';}
+  let h=`<div class="vipbox"><b>VIP資産</b><span>500億〜2000億円クラス・収益率30〜50%</span>`;
+  n.vip.forEach((p,i)=>{const o=vOwnerOf(t,i),lv=vLvOf(t,i);let right,info=`${fmt(p.price)}・収益率 ${p.yld}%`;
+    if(o!=null)info+=`・年収益 ${fmt(vIncomeOf(t,i,o))}`;
+    if(o===pi&&canAct)right=lv>=MAXLV?`<span class="owned" style="background:${S.players[o].color}">増資済み</span>`:`<button class="buy vinv" data-i="${i}" ${S.players[pi].money<vInvestCost(t,i)?'disabled':''}>増資<br>${fmt(vInvestCost(t,i))}</button>`;
+    else if(o!=null)right=`<span class="owned" style="background:${S.players[o].color}">${S.players[o].short}所有</span>`;
+    else if(canAct&&!lockedFor(t,pi))right=`<button class="buy vbuy" data-i="${i}" ${S.players[pi].money<p.price?'disabled':''}>買う</button>`;
+    else right=`<span class="owned" style="background:#cdb88f">空き</span>`;
+    h+=`<div class="prop vip"><div class="pn">${p.name}${stars(lv)}</div>${right}<div class="pm">${info}</div></div>`;});
+  return h+'</div>';
+}
+function vBuy(pi,t,i){const p=S.players[pi],pr=nodes[t].vip[i];vInit();if(!vipClass(pi)||p.money<pr.price||vOwnerOf(t,i)!=null||lockedFor(t,pi))return false;
+  p.money-=pr.price;S.vOwners[hk(t,i)]=pi;log(`${p.name}がVIP資産「${pr.name}」を${fmt(pr.price)}で取得`);return true;}
+function vInvest(pi,t,i){const p=S.players[pi],c=vInvestCost(t,i);vInit();if(p.money<c||vLvOf(t,i)>=MAXLV)return false;
+  p.money-=c;S.vLevels[hk(t,i)]=vLvOf(t,i)+1;log(`${p.name}が「${nodes[t].vip[i].name}」に${fmt(c)}を増資`);return true;}
+
+/* ---------- Executive資産（総資産50兆円以上のプレイヤー専用） ---------- */
+const EXLINE=5000000000;                  // 50兆円（単位：万円）
+const EX_MULT=10;                         // Executive資産を買い占めた都市は収益がさらに10倍
+const EX_T=['メガシティ開発権','国際送電網','海底ケーブル網','宇宙ステーション運営権','世界食糧取引所','国際決済ネットワーク','柿と栗の世界農園','月面リゾート開発'];
+allTownIds.forEach(t=>{const n=nodes[t],h=hsh('exec'+n.name),cnt=n.area?3:2,used=new Set();n.exec=[];
+  for(let j=0;j<cnt;j++){let q=(h>>>(j*4))%EX_T.length;while(used.has(q))q=(q+1)%EX_T.length;used.add(q);
+    const r=((h>>>(j*6+3))%1000)/1000;
+    n.exec.push({name:n.name+EX_T[q],price:Math.round((50000000+r*r*2450000000)*(n.nation?5000:1)/1000000)*1000000,yld:35+((h>>>(j*5+1))%41)});}   // 5000億〜25兆円・収益率35〜75%
+});
+function eInit(){if(!S.eOwners)S.eOwners={};if(!S.eLevels)S.eLevels={};}
+const eOwnerOf=(t,i)=>{const o=S.eOwners&&S.eOwners[hk(t,i)];return o==null?null:o;};
+const eLvOf=(t,i)=>(S.eLevels&&S.eLevels[hk(t,i)])||0;
+const eInvestCost=(t,i)=>Math.round(nodes[t].exec[i].price*.5/1000000)*1000000;
+const eValOf=(t,i)=>Math.round(nodes[t].exec[i].price*(1+.5*eLvOf(t,i)));
+function exOf(t){const es=nodes[t].exec;const o=eOwnerOf(t,0);if(o==null)return null;for(let i=1;i<es.length;i++)if(eOwnerOf(t,i)!==o)return null;return o;}
+function exMult(t,pi){return exOf(t)===pi?EX_MULT:1;}
+const eIncomeOf=(t,i,pi)=>Math.round(nodes[t].exec[i].price*nodes[t].exec[i].yld/100*(1+.7*eLvOf(t,i))*domMult(t,pi)*exMult(t,pi));
+function eHoldings(pi){const out=[];allTownIds.forEach(t=>nodes[t].exec.forEach((p,i)=>{if(eOwnerOf(t,i)===pi)out.push({t,i,p});}));return out;}
+const execClass=pi=>assets(pi)>=EXLINE;
+const KEILINE=10000000000000;            // 10京円（単位：万円）
+const keiClass=pi=>assets(pi)>=KEILINE;
+function execRows(t,pi,canAct){
+  const n=nodes[t],x=exOf(t);
+  if(!execClass(pi)){return vipClass(pi)&&canAct?`<div class="exbox locked"><b>Executive資産 ${n.exec.length}件</b><span>総資産50兆円以上で解放されます</span></div>`:'';}
+  let h=`<div class="exbox"><b>Executive資産</b>${x!=null?`<span class="dom">${S.players[x].name}が買い占め中（この都市の収益がさらに${EX_MULT}倍）</span>`:`<span>5000億〜25兆円クラス・収益率35〜75%。すべて買い占めると、この都市の収益がさらに${EX_MULT}倍</span>`}`;
+  n.exec.forEach((p,i)=>{const o=eOwnerOf(t,i),lv=eLvOf(t,i);let right,info=`${fmt(p.price)}・収益率 ${p.yld}%`;
+    if(o!=null)info+=`・年収益 ${fmt(eIncomeOf(t,i,o))}`;
+    if(o===pi&&canAct)right=lv>=MAXLV?`<span class="owned" style="background:${S.players[o].color}">増資済み</span>`:`<button class="buy einv" data-i="${i}" ${S.players[pi].money<eInvestCost(t,i)?'disabled':''}>増資<br>${fmt(eInvestCost(t,i))}</button>`;
+    else if(o!=null)right=`<span class="owned" style="background:${S.players[o].color}">${S.players[o].short}所有</span>`;
+    else if(canAct&&!lockedFor(t,pi))right=`<button class="buy ebuy" data-i="${i}" ${S.players[pi].money<p.price?'disabled':''}>買う</button>`;
+    else right=`<span class="owned" style="background:#cdb88f">空き</span>`;
+    h+=`<div class="prop ex"><div class="pn">${p.name}${stars(lv)}</div>${right}<div class="pm">${info}</div></div>`;});
+  return h+'</div>';
+}
+function eBuy(pi,t,i){const p=S.players[pi],pr=nodes[t].exec[i];eInit();if(!execClass(pi)||p.money<pr.price||eOwnerOf(t,i)!=null||lockedFor(t,pi))return false;
+  p.money-=pr.price;S.eOwners[hk(t,i)]=pi;log(`${p.name}がExecutive資産「${pr.name}」を${fmt(pr.price)}で取得`);return true;}
+function eInvest(pi,t,i){const p=S.players[pi],c=eInvestCost(t,i);eInit();if(p.money<c||eLvOf(t,i)>=MAXLV)return false;
+  p.money-=c;S.eLevels[hk(t,i)]=eLvOf(t,i)+1;log(`${p.name}が「${nodes[t].exec[i].name}」に${fmt(c)}を増資`);return true;}
+function bindExec(sh,pi,t,draw){
+  sh.querySelectorAll('.buy.ebuy').forEach(b=>b.onclick=()=>{if(!eBuy(pi,t,+b.dataset.i))return;Snd.se('buy');
+    if(exOf(t)===pi){Snd.jingle('win');toast(`${nodes[t].name}のExecutive資産を買い占め！ 収益がさらに${EX_MULT}倍`,1900);}else{Snd.jingle('settle');toast('Executive資産を取得',1200);}draw();});
+  sh.querySelectorAll('.buy.einv').forEach(b=>b.onclick=()=>{const i=+b.dataset.i;if(!eInvest(pi,t,i))return;Snd.se('card');toast(`増資！ 年収益 ${fmt(eIncomeOf(t,i,pi))} に`,1300);draw();});
+}
+
+/* ---------- 投資提案：投資額と増える年収益（利回り・回収年数）から有望案件を並べる ---------- */
+function townInc(t,pi){const n=nodes[t];let s=0;
+  n.props.forEach((x,i)=>{if(ownerOf(t,i)===pi)s+=incomeOf(t,i,pi);});
+  n.hidden.forEach((x,i)=>{if(hOwnerOf(t,i)===pi)s+=hIncomeOf(t,i,pi);});
+  n.vip.forEach((x,i)=>{if(vOwnerOf(t,i)===pi)s+=vIncomeOf(t,i,pi);});
+  n.exec.forEach((x,i)=>{if(eOwnerOf(t,i)===pi)s+=eIncomeOf(t,i,pi);});return s;}
+function sim(t,pi,obj,k,val){const b=townInc(t,pi),had=Object.prototype.hasOwnProperty.call(obj,k),old=obj[k];obj[k]=val;const a=townInc(t,pi);if(had)obj[k]=old;else delete obj[k];return a-b;}
+const KIND={buy:'物件購入',inv:'増資',hbuy:'隠し資産',hinv:'隠し資産の増資',vbuy:'VIP資産',vinv:'VIP資産の増資',ebuy:'Executive資産',einv:'Executive資産の増資'};
+function proposals(pi){
+  if(!S.levels)S.levels={};hInit();vInit();eInit();
+  const p=S.players[pi],tyc=tycoon(pi),vc=vipClass(pi),ec=execClass(pi),out=[];
+  allTownIds.forEach(t=>{if(lockedFor(t,pi))return;const n=nodes[t];
+    n.props.forEach((x,i)=>{const o=ownerOf(t,i);
+      if(o==null)out.push({kind:'buy',t,i,name:x.name,cost:x.price,gain:sim(t,pi,S.owners,key(t,i),pi)});
+      else if(o===pi&&lvOf(t,i)<MAXLV)out.push({kind:'inv',t,i,name:x.name,cost:investCost(t,i),gain:sim(t,pi,S.levels,key(t,i),lvOf(t,i)+1)});});
+    if(tyc)n.hidden.forEach((x,i)=>{const o=hOwnerOf(t,i);
+      if(o==null)out.push({kind:'hbuy',t,i,name:x.name,cost:x.price,gain:sim(t,pi,S.hOwners,hk(t,i),pi)});
+      else if(o===pi&&hLvOf(t,i)<MAXLV)out.push({kind:'hinv',t,i,name:x.name,cost:hInvestCost(t,i),gain:sim(t,pi,S.hLevels,hk(t,i),hLvOf(t,i)+1)});});
+    if(ec)n.exec.forEach((x,i)=>{const o=eOwnerOf(t,i);
+      if(o==null)out.push({kind:'ebuy',t,i,name:x.name,cost:x.price,gain:sim(t,pi,S.eOwners,hk(t,i),pi)});
+      else if(o===pi&&eLvOf(t,i)<MAXLV)out.push({kind:'einv',t,i,name:x.name,cost:eInvestCost(t,i),gain:sim(t,pi,S.eLevels,hk(t,i),eLvOf(t,i)+1)});});
+    if(vc)n.vip.forEach((x,i)=>{const o=vOwnerOf(t,i);
+      if(o==null)out.push({kind:'vbuy',t,i,name:x.name,cost:x.price,gain:sim(t,pi,S.vOwners,hk(t,i),pi)});
+      else if(o===pi&&vLvOf(t,i)<MAXLV)out.push({kind:'vinv',t,i,name:x.name,cost:vInvestCost(t,i),gain:sim(t,pi,S.vLevels,hk(t,i),vLvOf(t,i)+1)});});
+  });
+  out.forEach(o=>{o.roi=o.gain/o.cost;o.pay=o.cost/o.gain;o.afford=p.money>=o.cost;o.dist=DIST[p.pos][o.t];o.ex=o.kind==='ebuy'&&(()=>{S.eOwners[hk(o.t,o.i)]=pi;const d=exOf(o.t)===pi;delete S.eOwners[hk(o.t,o.i)];return d;})();o.dom=/^h/.test(o.kind)&&sim(o.t,pi,S.hOwners,hk(o.t,o.i),pi)>0&&(()=>{S.hOwners[hk(o.t,o.i)]=pi;const d=domOf(o.t)===pi;delete S.hOwners[hk(o.t,o.i)];return d;})();});
+  return out.filter(o=>o.gain>0);
+}
+function execProposal(pi,o){
+  const p=S.players[pi];
+  if(o.kind==='buy'){if(p.money<o.cost||ownerOf(o.t,o.i)!=null)return false;p.money-=o.cost;S.owners[key(o.t,o.i)]=pi;log(`${p.name}が${o.name}を${fmt(o.cost)}で買った（投資銀行家）`);return true;}
+  if(o.kind==='inv'){if(p.money<o.cost)return false;doInvest(pi,o.t,o.i);return true;}
+  if(o.kind==='hbuy')return hBuy(pi,o.t,o.i);
+  if(o.kind==='hinv')return hInvest(pi,o.t,o.i);
+  if(o.kind==='vbuy')return vBuy(pi,o.t,o.i);
+  if(o.kind==='vinv')return vInvest(pi,o.t,o.i);
+  if(o.kind==='ebuy')return eBuy(pi,o.t,o.i);
+  if(o.kind==='einv')return eInvest(pi,o.t,o.i);
+  return false;
+}
+function advisorSheet(pi){
+  const p=S.players[pi];let mode='roi',onlyAfford=true;
+  return new Promise(res=>{const sh=$('sheet');
+    const draw=()=>{
+      let list=proposals(pi);if(onlyAfford)list=list.filter(o=>o.afford);
+      list.sort(mode==='roi'?(a,b)=>b.roi-a.roi:(a,b)=>b.gain-a.gain);list=list.slice(0,15);
+      const canRemote=tycoon(pi);
+      const row=(o,k)=>`<div class="adv"><div class="ah"><span class="rank">${k+1}</span><b>${o.name}</b><span class="kind k-${o.kind}">${KIND[o.kind]}</span>${o.dom?'<span class="kind k-dom">支配達成！</span>':''}${o.ex?'<span class="kind k-dom">収益10倍達成！</span>':''}</div>
+        <div class="anums"><span>投資額<b>${fmt(o.cost)}</b></span><span>年収益<b>+${fmt(o.gain)}</b></span><span>利回り<b>${(o.roi*100).toFixed(o.roi<1?0:0)}%</b></span><span>回収<b>${o.pay<1?'1年未満':o.pay.toFixed(1)+'年'}</b></span></div>
+        <div class="afoot"><span>${nodes[o.t].name}・${o.t===p.pos?'いまここ':o.dist!=null?`${o.dist}マス先`:'飛行機で'}</span>${canRemote?`<button class="btn main" data-k="${k}" ${o.afford?'':'disabled'}>投資銀行家で実行</button>`:`<button class="btn ghost" data-map="${o.t}">地図で見る</button>`}</div></div>`;
+      sh.innerHTML=`<h2>投資提案</h2><p class="lead">増える年収益÷投資額（利回り）と、元が取れるまでの年数で有望な案件を並べました。買い占め・都市支配で町全体の収益が上がる分も含めて計算しています。所持金 ${fmt(p.money)}${canRemote?'':'。購入・増資はその町に止まったときにできます。'}</p>
+        <div class="tabs"><button class="tab ${mode==='roi'?'on':''}" id="advRoi">利回り順</button><button class="tab ${mode==='gain'?'on':''}" id="advGain">収益額順</button><button class="tab ${onlyAfford?'on':''}" id="advAff">今の資金で買える</button></div>
+        <div class="body">${list.length?list.map(row).join(''):'<p class="lead">条件に合う案件がありません。</p>'}</div>
+        <div class="btns"><button class="btn ghost" id="advBack">閉じる</button></div>`;
+      $('advRoi').onclick=()=>{mode='roi';draw();};$('advGain').onclick=()=>{mode='gain';draw();};$('advAff').onclick=()=>{onlyAfford=!onlyAfford;draw();};
+      sh.querySelectorAll('[data-k]').forEach(b=>b.onclick=()=>{const o=list[+b.dataset.k];if(execProposal(pi,o)){Snd.se('buy');
+        if(/^h/.test(o.kind)&&domOf(o.t)===pi){Snd.jingle('goal');toast(`${nodes[o.t].name}を支配！ 収益が${DOM_MULT}倍に`,1800);}else toast(`${KIND[o.kind]}を実行しました`,1100);render();draw();}});
+      sh.querySelectorAll('[data-map]').forEach(b=>b.onclick=()=>{$('ov').hidden=true;lookAt(b.dataset.map);res();});
+      $('advBack').onclick=()=>{$('ov').hidden=true;res();};
+    };
+    $('ov').hidden=false;draw();sh.scrollTop=0;});
+}
 
 /* ---------- dice ---------- */
 async function rollDice(n){
@@ -605,8 +1107,8 @@ function cpuDest(pi,cands){
   const p=S.players[pi];
   if(cands.has(S.goal))return S.goal;
   let tgt=S.goal;
-  if(nodes[p.pos].world){
-    if(!p.wt||p.wt===p.pos||!nodes[p.wt].world)p.wt=pick(allTownIds.filter(t=>nodes[t].world&&t!==p.pos));
+  if(nodes[p.pos].world||nodes[p.pos].area||nodes[p.pos].nation){const same=t=>!!nodes[t].world===!!nodes[p.pos].world&&!!nodes[t].area===!!nodes[p.pos].area&&!!nodes[t].nation===!!nodes[p.pos].nation;
+    if(!p.wt||p.wt===p.pos||!same(p.wt))p.wt=pick(allTownIds.filter(t=>same(t)&&t!==p.pos));
     tgt=p.wt;
   }
   let best=null,bs=Infinity;
@@ -654,10 +1156,10 @@ function flightSheet(pi,free){
     $('ov').hidden=false;sh.scrollTop=0;
   });
 }
-async function fly(pi,dest,cost){
+async function fly(pi,dest,cost,jet){
   const p=S.players[pi],from=p.pos,A=nodes[from],B=nodes[dest];
   p.money-=cost;
-  log(`${p.name}は${A.name}から${B.name}へ飛行機で移動${cost?`（運賃 ${fmt(cost)}）`:''}`);
+  log(`${p.name}は${A.name}から${B.name}へ${jet?'プライベートジェット':'飛行機'}で移動${cost?`（運賃 ${fmt(cost)}）`:''}`);
   Snd.se('fly');
   p.flying=true;render();
   fitBox(Math.min(A.x,B.x),Math.min(A.y,B.y),Math.max(A.x,B.x),Math.max(A.y,B.y));
@@ -697,22 +1199,28 @@ async function cpuMaybeFly(pi){
 /* ---------- squares ---------- */
 async function forceSell(pi){
   const p=S.players[pi];
+  while(p.money<0&&vHoldings(pi).length&&!holdings(pi).length&&!hHoldings(pi).length){const h=vHoldings(pi).sort((a,b)=>vValOf(a.t,a.i)-vValOf(b.t,b.i))[0],got=Math.round(vValOf(h.t,h.i)/2);
+    delete S.vOwners[hk(h.t,h.i)];delete S.vLevels[hk(h.t,h.i)];p.money+=got;log(`${p.name}は借金のため${h.p.name}を${fmt(got)}で売った`);await toast(`${h.p.name}を手放した…`,1100);}
+  while(p.money<0&&hHoldings(pi).length&&!holdings(pi).length){const h=hHoldings(pi).sort((a,b)=>hValOf(a.t,a.i)-hValOf(b.t,b.i))[0],got=Math.round(hValOf(h.t,h.i)/2);
+    delete S.hOwners[hk(h.t,h.i)];delete S.hLevels[hk(h.t,h.i)];p.money+=got;log(`${p.name}は借金のため${h.p.name}を${fmt(got)}で売った`);await toast(`${h.p.name}を手放した…`,1100);}
   while(p.money<0){const hs=holdings(pi).sort((a,b)=>valOf(a.t,a.i)-valOf(b.t,b.i));if(!hs.length)break;
     const h=hs[0],got=Math.round(valOf(h.t,h.i)/2);delete S.owners[key(h.t,h.i)];delete S.levels[key(h.t,h.i)];p.money+=got;
     log(`${p.name}は借金のため${h.p.name}を${fmt(got)}で売った`);await toast(`${h.p.name}を手放した…`,1100);}
 }
 async function arrive(pi){
   Snd.jingle('goal');
-  const p=S.players[pi];const r=S.goalReward;p.money+=r;
+  const p=S.players[pi],domGoal=domOf(S.goal)===pi,kei=assets(pi)>=1000000000000,r=S.goalReward*(domGoal?1000:1)*(kei?10000000:1);
+  if(kei)log(`総資産1京円以上！ 目的地の賞金が1000万倍`);p.money+=r;
+  if(domGoal)log(`支配都市でのゴール！ 賞金が1000倍`);
   log(`${p.name}が${nodes[S.goal].name}に一番乗り！ ${fmt(r)}`);
   const from=S.goal;setGoal(from);
-  if(p.cpu){await toast(`${p.name}が目的地に到着！ 賞金${fmt(r)}`,1700);await toast(`次の目的地は${nodes[S.goal].name}`,1300);}
-  else await modal('一番乗り！',`${nodes[from].name}に到着しました。`,`<div class="big">+${fmt(r)}</div><p>次の目的地は <b>${nodes[S.goal].name}</b> です。</p>`);
+  if(p.cpu){await toast(`${p.name}が目的地に到着！ 賞金${fmt(r)}${domGoal?'（支配都市で1000倍）':''}${kei?'（1京円以上で1000万倍）':''}`,1900);await toast(`次の目的地は${nodes[S.goal].name}`,1300);}
+  else await modal(kei&&domGoal?'賞金100億倍！':kei?'賞金1000万倍！':domGoal?'支配都市でゴール！ 賞金1000倍':'一番乗り！',`${nodes[from].name}に到着しました。`,`<div class="big">+${fmt(r)}</div>${domGoal?'<p>自分が支配している都市なので、賞金が<b>1000倍</b>になりました。</p>':''}${kei?'<p>総資産1京円以上なので、賞金が<b>1000万倍</b>になりました。</p>':''}<p>次の目的地は <b>${nodes[S.goal].name}</b> です。</p>`);
   render();
   lookAt(S.goal);await sleep(1300);lookAt(p.pos);
 }
 async function land(pi){
-  const p=S.players[pi],n=nodes[p.pos],wm=n.world?2:1;
+  const p=S.players[pi],n=nodes[p.pos],wm=n.nation?10000000:n.area?10000:n.world?2:1;
   if(p.pos===S.goal)await arrive(pi);
   if(n.type==='town'){
     if(p.cpu)await cpuShop(pi,p.pos);else await humanShop(pi,p.pos);
@@ -726,7 +1234,7 @@ async function land(pi){
     Snd.se('minus');log(`${p.name}：赤マス ${winter?'雪害で':''}−${fmt(a)}`);await toast(`${winter?'雪害… ':''}−${fmt(a)}`,1100);
     await forceSell(pi);
   }else if(n.type==='card'){
-    if(p.cards.length>=6){log(`${p.name}：札がいっぱいでもらえない`);await toast('札がいっぱい',900);}
+    if(p.cards.length>=6&&!tycoon(pi)){log(`${p.name}：札がいっぱいでもらえない`);await toast('札がいっぱい',900);}
     else{const c=pick(CARD_POOL);p.cards.push(c);Snd.se('card');log(`${p.name}：${CARDS[c].name}を手に入れた`);await toast(p.cpu?`${p.name}は札を手に入れた`:`${CARDS[c].name}を手に入れた`,1100);}
   }
   render();
@@ -770,6 +1278,7 @@ async function cpuShop(pi,t){
   const p=S.players[pi];const ps=nodes[t].props;
   const order=ps.map((pr,i)=>({pr,i})).filter(x=>ownerOf(t,x.i)==null).sort((a,b)=>b.pr.yld-a.pr.yld);
   let bought=[];
+  if(lockedFor(t,pi)){render();await sleep(400);return;}
   for(const x of order){if(p.money-x.pr.price>=200){p.money-=x.pr.price;S.owners[key(t,x.i)]=pi;bought.push(x.pr.name);}}
   // M&A: 収益の高い相手物件を1件だけ、資金に余裕があれば買収
   const targets=ps.map((pr,i)=>({pr,i})).filter(x=>{const o=ownerOf(t,x.i);return o!=null&&o!==pi;})
@@ -790,6 +1299,7 @@ async function cpuShop(pi,t){
 async function cpuTurnCards(pi){
   const p=S.players[pi],o=S.players[1-pi];
   const has=c=>p.cards.includes(c);
+  if(tycoon(pi)){await cpuTycoon(pi);if(p.pos!==S.goal){await toast(`${p.name}はプライベートジェットで${nodes[S.goal].name}へ`,1200);await fly(pi,S.goal,0,true);return 0;}}
   if(S.crow.holder===pi&&has('toriyoke'))await useCard(pi,'toriyoke');
   if(has('hosaku'))await useCard(pi,'hosaku');
   const inW=nodes[p.pos].world,d=inW?8:DIST[p.pos][S.goal],od=DIST[o.pos][S.goal]??99;
@@ -815,12 +1325,16 @@ async function playTurn(pi){
     for(;;){
       idle=true;
       const btns=[{label:'サイコロを振る',v:'roll',cls:'main'},{label:`札 ${p.cards.length}`,v:'card'}];
-      if(nodes[p.pos].airport)btns.push({label:'✈ 飛行機',v:'fly'});
-      btns.push({label:'物件',v:'hold',cls:'ghost'});
+      if(tycoon(pi)){btns.push({label:'🛩 ジェット',v:'jet'},{label:'🏦 投資銀行',v:'bank'});}
+      else if(nodes[p.pos].airport||nodes[p.pos].area||nodes[p.pos].nation)btns.push({label:'✈ 飛行機',v:'fly'});
+      btns.push({label:'物件',v:'hold',cls:'ghost'},{label:'💡 投資提案',v:'adv',cls:'ghost'});
       const v=await actions(btns);
       idle=false;
       if(v==='roll')break;
       if(v==='hold'){await showHoldings();continue;}
+      if(v==='adv'){await advisorSheet(pi);render();continue;}
+      if(v==='bank'){await bankerSheet(pi);render();continue;}
+      if(v==='jet'){const d=await jetSheet(pi);if(!d)continue;await fly(pi,d,0,true);await land(pi);return;}
       if(v==='fly'){const d=await flightSheet(pi,false);if(!d)continue;await fly(pi,d,fare(p.pos,d));await land(pi);return;}
       const c=await humanCardSheet(pi);
       if(!c)continue;
@@ -847,14 +1361,14 @@ async function crowMischief(pi){
 async function harvest(){
   const inc=[0,1].map(pi=>yearIncome(pi,true));
   inc.forEach((a,pi)=>S.players[pi].money+=a);
-  log(`10月の収穫：あなた +${fmt(inc[0])}／栗山社長 +${fmt(inc[1])}`);
+  log(`10月の収穫：あなた +${fmt(inc[0])}／山岡社長 +${fmt(inc[1])}`);
   Snd.jingle('harvest');
-  await modal('柿の収穫','農園（柿畑など）の物件から収穫の売上が入りました。',`<table class="res"><tr><th></th><th>収穫</th></tr><tr><td>あなた</td><td>+${fmt(inc[0])}</td></tr><tr><td>栗山社長</td><td>+${fmt(inc[1])}</td></tr></table>`);
+  await modal('柿の収穫','農園（柿畑など）の物件から収穫の売上が入りました。',`<table class="res"><tr><th></th><th>収穫</th></tr><tr><td>あなた</td><td>+${fmt(inc[0])}</td></tr><tr><td>山岡社長</td><td>+${fmt(inc[1])}</td></tr></table>`);
 }
 async function settlement(){
   const inc=[0,1].map(pi=>yearIncome(pi));
   inc.forEach((a,pi)=>S.players[pi].money+=a);
-  log(`${S.year}年目の決算：あなた +${fmt(inc[0])}／栗山社長 +${fmt(inc[1])}`);
+  log(`${S.year}年目の決算：あなた +${fmt(inc[0])}／山岡社長 +${fmt(inc[1])}`);
   render();
   Snd.jingle('settle');
   await modal(`${S.year}年目 決算`,'物件の収益が入りました。',`<table class="res"><tr><th></th><th>収益</th><th>総資産</th></tr>${[0,1].map(pi=>`<tr><td>${S.players[pi].name}</td><td>+${fmt(inc[pi])}</td><td>${fmt(assets(pi))}</td></tr>`).join('')}</table>`);
@@ -880,7 +1394,7 @@ async function gameOver(){
   const a=[0,1].map(assets);const win=a[0]>a[1]?0:a[1]>a[0]?1:-1;
   Snd.jingle(win===1?'lose':'win');
   render();
-  await modal(win===0?'あなたの勝ち！':win===1?'栗山社長の勝ち':'引き分け',`${S.years}年間の結果です。`,
+  await modal(win===0?'あなたの勝ち！':win===1?'山岡社長の勝ち':'引き分け',`${S.years}年間の結果です。`,
    `<table class="res"><tr><th></th><th>所持金</th><th>物件</th><th>総資産</th></tr>${[0,1].map(pi=>`<tr><td>${S.players[pi].name}</td><td>${fmt(S.players[pi].money)}</td><td>${holdings(pi).length}件</td><td><b>${fmt(a[pi])}</b></td></tr>`).join('')}</table>`,
    [{label:'タイトルへ',v:1,cls:'main'}]);
   showTitle();
@@ -911,7 +1425,7 @@ const Snd=(()=>{
   const midi=s=>{const m=/^([A-G])(#?)(\d)$/.exec(s);return 12*(+m[3]+1)+NOTE[m[1]]+(m[2]?1:0);};
   const hz=m=>440*Math.pow(2,(m-69)/12);
   const parse=s=>s.trim().split(/\s+/).map(t=>{const [n,b]=t.split(':');return {m:n==='R'?null:midi(n),b:+b};});
-  // 柿太郎のテーマ（汽車のリズムに乗せた五音音階のマーチ）
+  // 栗太郎のテーマ（汽車のリズムに乗せた五音音階のマーチ）
   const MEL_A='E5:.5 G5:.5 A5:1 G5:.5 E5:.5 D5:1  C5:.5 D5:.5 E5:.5 G5:.5 E5:2  A5:.5 C6:.5 A5:.5 G5:.5 E5:1 G5:1  D5:.5 E5:.5 D5:.5 C5:.5 D5:2 '+
               'E5:.5 G5:.5 A5:1 C6:.5 A5:.5 G5:1  A5:.5 G5:.5 E5:.5 D5:.5 E5:1 G5:1  A5:1 G5:.5 E5:.5 D5:.5 E5:.5 D5:.5 C5:.5  C5:3 R:1';
   const MEL_B=' F5:1 A5:1 C6:1 A5:1  G5:.5 A5:.5 G5:.5 E5:.5 C5:2  F5:1 A5:1 C6:.5 D6:.5 C6:1  A5:.5 G5:.5 E5:.5 G5:.5 A5:2 '+
@@ -1058,14 +1572,34 @@ $('yN').addEventListener('input',()=>{const v=Math.round(+$('yN').value);
   if(v>=1&&v<=99){years=v;$('ycLabel').classList.add('on');document.querySelectorAll('#yrs button').forEach(x=>x.setAttribute('aria-pressed','false'));}
   else{$('ycLabel').classList.remove('on');}});
 $('yN').addEventListener('change',()=>{let v=Math.round(+$('yN').value);if(!$('yN').value)return;v=Math.min(99,Math.max(1,v||1));$('yN').value=v;$('yN').dispatchEvent(new Event('input'));});
-function showTitle(){$('title').hidden=false;$('contBtn').hidden=!loadSave();Snd.music('title');}
+function slotSummary(d){const a=d.players.map((p,i)=>p.money+Object.entries(d.owners||{}).filter(([k,o])=>o===i).reduce((s,[k])=>{const [t,j]=k.split(':');const pr=nodes[t]&&nodes[t].props[+j];return s+(pr?Math.round(pr.price*(1+.5*((d.levels||{})[k]||0))):0);},0)+Object.entries(d.hOwners||{}).filter(([k,o])=>o===i).reduce((s,[k])=>{const [t,j]=k.split(':');const pr=nodes[t]&&nodes[t].hidden[+j];return s+(pr?Math.round(pr.price*(1+.5*((d.hLevels||{})[k]||0))):0);},0)+Object.entries(d.vOwners||{}).filter(([k,o])=>o===i).reduce((s,[k])=>{const [t,j]=k.split(':');const pr=nodes[t]&&nodes[t].vip[+j];return s+(pr?Math.round(pr.price*(1+.5*((d.vLevels||{})[k]||0))):0);},0)+Object.entries(d.eOwners||{}).filter(([k,o])=>o===i).reduce((s,[k])=>{const [t,j]=k.split(':');const pr=nodes[t]&&nodes[t].exec[+j];return s+(pr?Math.round(pr.price*(1+.5*((d.eLevels||{})[k]||0))):0);},0));
+  const dt=d.savedAt?new Date(d.savedAt):null;
+  return `${d.year}年目 ${d.month}月<small> / 全${d.years}年</small><span>あなた ${fmt(a[0])}・${d.players[1].name==='栗'+'山社長'?'山岡社長':d.players[1].name} ${fmt(a[1])}${dt?`・${dt.getMonth()+1}/${dt.getDate()} ${String(dt.getHours()).padStart(2,'0')}:${String(dt.getMinutes()).padStart(2,'0')}保存`:''}</span>`;}
+function renderSlots(){
+  const box=$('slots');box.innerHTML='<div class="slothead">セーブデータ（5つまで）</div>';
+  for(let n=1;n<=SLOTS;n++){const d=readSlot(n);const row=document.createElement('div');row.className='slot'+(d?'':' empty');
+    row.innerHTML=`<div class="sinfo"><b>スロット${n}</b>${d?slotSummary(d):'<span>空き</span>'}</div><div class="sbtns"></div>`;
+    const bb=row.querySelector('.sbtns');
+    const mk=(label,cls,fn,confirmLabel)=>{const b=document.createElement('button');b.className='btn '+cls;b.textContent=label;b.id=`slot${n}-${cls.split(' ')[0]}`;
+      b.onclick=()=>{if(confirmLabel&&!b.dataset.arm){b.dataset.arm=1;b.textContent=confirmLabel;b.classList.add('warn');setTimeout(()=>{if(b.isConnected){delete b.dataset.arm;b.textContent=label;b.classList.remove('warn');}},3000);return;}fn();};bb.appendChild(b);};
+    if(d){mk('つづきから','main cont',()=>startFromSlot(n));
+      mk('新しく','ghost new',()=>startNew(n),'上書きする？');
+      mk('消す','ghost del',()=>{clearSave(n);renderSlots();},'本当に消す？');}
+    else mk('ここで始める','main start',()=>startNew(n));
+    box.appendChild(row);}
+}
+function showTitle(){$('title').hidden=false;renderSlots();Snd.music('title');}
+function migrateNames(){const c=S.players[1];if(c.name==='栗'+'山社長')c.name='山岡社長';if(c.short==='栗')c.short='山';if(S.players[0].short==='柿')S.players[0].short='栗';}
+function startNew(n){Snd.init();slot=n;newGame(years);$('title').hidden=true;S.log=[];lookAt(START,true);log(`東京から出発！（スロット${n}）目的地をめざしましょう`);loop();}
+function startFromSlot(n){Snd.init();const d=readSlot(n);if(!d)return;slot=n;S=d;if(!S.levels)S.levels={};hInit();vInit();eInit();migrateNames();$('title').hidden=true;lookAt(S.players[S.turn].pos,true);log(`スロット${n}から再開しました`);loop();}
+function closeSheet(){const bs=[...document.querySelectorAll('#sheet .btns .btn')];const b=bs[bs.length-1];if(b)b.click();else $('ov').hidden=true;}
+$('ovClose').onclick=closeSheet;
+$('ov').addEventListener('click',e=>{if(e.target===$('ov'))closeSheet();});
 $('sndBtn').onclick=()=>{Snd.toggle();updSndBtn();};
 $('tSndBtn').onclick=()=>{Snd.toggle();updSndBtn();$('tSndBtn').textContent=Snd.isOn()?'♪ BGM あり':'♪ BGM なし';};
 $('tSndBtn').textContent=Snd.isOn()?'♪ BGM あり':'♪ BGM なし';
 updSndBtn();
 document.addEventListener('pointerdown',()=>Snd.init(),{once:true});
-$('startBtn').onclick=()=>{Snd.init();newGame(years);$('title').hidden=true;S.log=[];lookAt(START,true);log('東京から出発！ 目的地をめざしましょう');loop();};
-$('contBtn').onclick=()=>{Snd.init();const s=loadSave();if(!s)return;S=s;$('title').hidden=true;lookAt(S.players[S.turn].pos,true);log('つづきから再開しました');loop();};
 drawStatic();
 newGame(3);render();
 initCam();lookAt(START,true);
